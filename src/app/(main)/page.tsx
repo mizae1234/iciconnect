@@ -19,40 +19,62 @@ export default async function HomePage() {
     return (
         <div className="space-y-0">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-500 to-emerald-500">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDJ2LTJoMzR6bTAtMzBWMEgydjRoMzR6TTIgMjR2MmgzNHYtMkgyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-40" />
-                {/* Animated glow orbs */}
-                <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl hero-glow-1" />
-                <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-white/10 rounded-full blur-3xl hero-glow-2" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.03] rounded-full blur-3xl hero-glow-1" />
-                {/* Shimmer overlay */}
-                <div className="absolute inset-0 hero-shimmer pointer-events-none" />
+            <section className="relative overflow-hidden bg-gradient-to-b from-[#eef9f7] via-[#f4fbfa] to-white">
+                {/* Decorative background elements */}
+                <div className="absolute top-0 left-0 w-full h-full">
+                    <div className="absolute top-20 left-[10%] w-3 h-3 rounded-full bg-[#3B9E96]/20 hero-float" />
+                    <div className="absolute top-32 right-[15%] w-5 h-5 rounded-full bg-[#3B9E96]/15 hero-float" style={{ animationDelay: "1s" }} />
+                    <div className="absolute bottom-24 left-[20%] w-4 h-4 rounded-full bg-[#7ECEC5]/25 hero-float" style={{ animationDelay: "2s" }} />
+                    <div className="absolute top-16 left-[45%] w-2 h-2 rounded-full bg-[#3B9E96]/30 hero-float" style={{ animationDelay: "3s" }} />
+                    <div className="absolute bottom-32 right-[25%] w-3 h-3 rounded-full bg-[#B8E5DF]/40 hero-float" style={{ animationDelay: "1.5s" }} />
+                    {/* Large decorative circle */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-[#3B9E96]/10 hero-glow-1" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full border border-[#3B9E96]/5 hero-glow-2" />
+                </div>
 
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-                    <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                        <div className="flex-1 text-center md:text-left">
-                            <div className="hero-animate-badge inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 text-white/90 text-sm mb-6">
+                    <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+                        {/* Text side */}
+                        <div className="flex-1 text-center md:text-left z-10">
+                            <div className="hero-animate-badge inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-[#3B9E96]/20 rounded-full px-4 py-1.5 text-[#3B9E96] text-sm mb-6 shadow-sm">
                                 <CalendarDays className="h-4 w-4" />
                                 {format(new Date(), "วันEEEEที่ d MMMM yyyy", { locale: th })}
                             </div>
-                            <h1 className="hero-animate-title text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+                            <h1 className="hero-animate-title text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4 leading-tight">
                                 ยินดีต้อนรับสู่
                                 <br />
-                                <span className="text-white/90">ICI Connect</span>
+                                <span className="text-[#3B9E96]">ICI Connect</span>
                             </h1>
-                            <p className="hero-animate-subtitle text-lg md:text-xl text-white/80 max-w-lg">
+                            <p className="hero-animate-subtitle text-lg md:text-xl text-gray-500 max-w-lg">
                                 ศูนย์กลางข่าวสาร แอปพลิเคชัน และทรัพยากรต่างๆ ของบริษัท iCare Insurance
                             </p>
                         </div>
 
-                        <div className="flex-shrink-0 hero-animate-logo hero-float">
-                            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/10">
+                        {/* Illustration side */}
+                        <div className="relative flex-shrink-0 hero-animate-logo z-10">
+                            {/* Floating badges */}
+                            <div className="absolute -top-4 -right-4 md:-right-8 bg-white rounded-xl px-4 py-2 shadow-lg shadow-black/5 border border-gray-100 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "0.5s" }}>
+                                <div className="w-7 h-7 rounded-lg bg-[#3B9E96]/15 flex items-center justify-center">
+                                    <svg className="w-4 h-4 text-[#3B9E96]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" /></svg>
+                                </div>
+                                <span className="text-sm font-medium text-gray-700">ปลอดภัย</span>
+                            </div>
+
+                            <div className="absolute -bottom-4 -left-4 md:-left-10 bg-white rounded-xl px-4 py-2 shadow-lg shadow-black/5 border border-gray-100 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "1.5s" }}>
+                                <div className="w-7 h-7 rounded-lg bg-[#3B9E96]/15 flex items-center justify-center">
+                                    <svg className="w-4 h-4 text-[#3B9E96]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" /></svg>
+                                </div>
+                                <span className="text-sm font-medium text-gray-700">เชื่อมต่อ</span>
+                            </div>
+
+                            {/* Main illustration card */}
+                            <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-3 shadow-xl shadow-[#3B9E96]/5 border border-white/80">
                                 <Image
-                                    src="/logo.png"
-                                    alt="iCare Insurance"
-                                    width={280}
-                                    height={100}
-                                    className="h-20 md:h-24 w-auto"
+                                    src="/hero-illustration.png"
+                                    alt="ICI Connect"
+                                    width={400}
+                                    height={400}
+                                    className="w-72 md:w-80 lg:w-96 h-auto rounded-2xl"
                                     priority
                                 />
                             </div>
