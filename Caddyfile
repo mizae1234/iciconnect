@@ -1,0 +1,3 @@
+iciconnect.icareprojects.com {
+    reverse_proxy iciconnect:3006
+}
