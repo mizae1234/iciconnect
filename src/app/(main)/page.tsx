@@ -19,62 +19,68 @@ export default async function HomePage() {
     return (
         <div className="space-y-0">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-gradient-to-b from-[#eef9f7] via-[#f4fbfa] to-white">
-                {/* Decorative background elements */}
-                <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="absolute top-20 left-[10%] w-3 h-3 rounded-full bg-[#3B9E96]/20 hero-float" />
-                    <div className="absolute top-32 right-[15%] w-5 h-5 rounded-full bg-[#3B9E96]/15 hero-float" style={{ animationDelay: "1s" }} />
-                    <div className="absolute bottom-24 left-[20%] w-4 h-4 rounded-full bg-[#7ECEC5]/25 hero-float" style={{ animationDelay: "2s" }} />
-                    <div className="absolute top-16 left-[45%] w-2 h-2 rounded-full bg-[#3B9E96]/30 hero-float" style={{ animationDelay: "3s" }} />
-                    <div className="absolute bottom-32 right-[25%] w-3 h-3 rounded-full bg-[#B8E5DF]/40 hero-float" style={{ animationDelay: "1.5s" }} />
-                    {/* Large decorative circle */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-[#3B9E96]/10 hero-glow-1" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full border border-[#3B9E96]/5 hero-glow-2" />
+            <section className="relative overflow-hidden bg-gradient-to-br from-[#2d8a82] via-[#3B9E96] to-[#4db8af]">
+                {/* Animated background particles */}
+                <div className="absolute inset-0">
+                    <div className="absolute top-12 left-[8%] w-4 h-4 rounded-full bg-white/20 hero-float" />
+                    <div className="absolute top-28 right-[12%] w-6 h-6 rounded-full bg-white/10 hero-float" style={{ animationDelay: "1s" }} />
+                    <div className="absolute bottom-20 left-[18%] w-5 h-5 rounded-full bg-white/15 hero-float" style={{ animationDelay: "2s" }} />
+                    <div className="absolute top-20 left-[50%] w-3 h-3 rounded-full bg-white/25 hero-float" style={{ animationDelay: "3s" }} />
+                    <div className="absolute bottom-28 right-[20%] w-4 h-4 rounded-full bg-white/10 hero-float" style={{ animationDelay: "1.5s" }} />
+                    <div className="absolute top-[60%] left-[5%] w-2 h-2 rounded-full bg-white/30 hero-float" style={{ animationDelay: "0.5s" }} />
+                    {/* Glow circles */}
+                    <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl hero-glow-1" />
+                    <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-white/5 rounded-full blur-3xl hero-glow-2" />
+                    {/* Ring decorations */}
+                    <div className="absolute top-1/2 right-[15%] -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-white/10 hero-glow-1" />
+                    <div className="absolute top-1/2 right-[15%] -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/5 hero-glow-2" />
                 </div>
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
                     <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
                         {/* Text side */}
                         <div className="flex-1 text-center md:text-left z-10">
-                            <div className="hero-animate-badge inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-[#3B9E96]/20 rounded-full px-4 py-1.5 text-[#3B9E96] text-sm mb-6 shadow-sm">
+                            <div className="hero-animate-badge inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 text-white/90 text-sm mb-6">
                                 <CalendarDays className="h-4 w-4" />
                                 {format(new Date(), "วันEEEEที่ d MMMM yyyy", { locale: th })}
                             </div>
-                            <h1 className="hero-animate-title text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4 leading-tight">
+                            <h1 className="hero-animate-title text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
                                 ยินดีต้อนรับสู่
                                 <br />
-                                <span className="text-[#3B9E96]">ICI Connect</span>
+                                <span className="text-white/90">ICI Connect</span>
                             </h1>
-                            <p className="hero-animate-subtitle text-lg md:text-xl text-gray-500 max-w-lg">
-                                ศูนย์กลางข่าวสาร แอปพลิเคชัน และทรัพยากรต่างๆ ของบริษัท iCare Insurance
+                            <p className="hero-animate-subtitle text-base md:text-lg text-white/70 max-w-md">
+                                ศูนย์รวมประกาศ ข่าวสาร ประชาสัมพันธ์
+                                และแอปพลิเคชันสำหรับพนักงาน iCare Insurance
                             </p>
                         </div>
 
                         {/* Illustration side */}
                         <div className="relative flex-shrink-0 hero-animate-logo z-10">
                             {/* Floating badges */}
-                            <div className="absolute -top-4 -right-4 md:-right-8 bg-white rounded-xl px-4 py-2 shadow-lg shadow-black/5 border border-gray-100 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "0.5s" }}>
-                                <div className="w-7 h-7 rounded-lg bg-[#3B9E96]/15 flex items-center justify-center">
-                                    <svg className="w-4 h-4 text-[#3B9E96]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" /></svg>
-                                </div>
-                                <span className="text-sm font-medium text-gray-700">ปลอดภัย</span>
+                            <div className="absolute -top-3 -right-3 md:-right-12 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "0.5s" }}>
+                                <Megaphone className="h-4 w-4 text-[#3B9E96]" />
+                                <span className="text-sm font-medium text-gray-700">ข่าวสาร</span>
                             </div>
 
-                            <div className="absolute -bottom-4 -left-4 md:-left-10 bg-white rounded-xl px-4 py-2 shadow-lg shadow-black/5 border border-gray-100 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "1.5s" }}>
-                                <div className="w-7 h-7 rounded-lg bg-[#3B9E96]/15 flex items-center justify-center">
-                                    <svg className="w-4 h-4 text-[#3B9E96]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" /></svg>
-                                </div>
-                                <span className="text-sm font-medium text-gray-700">เชื่อมต่อ</span>
+                            <div className="absolute top-1/2 -left-6 md:-left-16 -translate-y-1/2 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "2s" }}>
+                                <LayoutGrid className="h-4 w-4 text-[#3B9E96]" />
+                                <span className="text-sm font-medium text-gray-700">ศูนย์รวม</span>
+                            </div>
+
+                            <div className="absolute -bottom-3 -right-2 md:-right-6 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "3.5s" }}>
+                                <CalendarDays className="h-4 w-4 text-[#3B9E96]" />
+                                <span className="text-sm font-medium text-gray-700">ประชาสัมพันธ์</span>
                             </div>
 
                             {/* Main illustration card */}
-                            <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-3 shadow-xl shadow-[#3B9E96]/5 border border-white/80">
+                            <div className="bg-white/20 backdrop-blur-sm rounded-3xl p-3 shadow-xl shadow-black/10 border border-white/30">
                                 <Image
                                     src="/hero-illustration.png"
                                     alt="ICI Connect"
                                     width={400}
                                     height={400}
-                                    className="w-72 md:w-80 lg:w-96 h-auto rounded-2xl"
+                                    className="w-52 md:w-60 lg:w-64 h-auto rounded-2xl"
                                     priority
                                 />
                             </div>
