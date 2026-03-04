@@ -149,6 +149,19 @@ export async function toggleAnnouncementActive(id: string) {
 
 export async function deleteAnnouncement(id: string) {
     await requireAdmin();
+
+    // Fetch announcement to get file URLs before deleting
+    const ann = await prisma.announcement.findUnique({ where: { id } });
+    if (!ann) return { error: "ไม่พบประกาศ" };
+
+    // Delete files from S3
+    const { deleteFromS3 } = await import("@/lib/s3");
+    const filesToDelete = [...(ann.attachments || [])];
+    if (ann.attachment_url) filesToDelete.push(ann.attachment_url);
+
+    await Promise.allSettled(filesToDelete.map((url) => deleteFromS3(url)));
+
+    // Delete from DB
     await prisma.announcement.delete({ where: { id } });
     revalidatePath("/admin/announcements");
     revalidatePath("/");
