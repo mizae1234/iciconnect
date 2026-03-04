@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  HR
+  IT
+  MANAGER
+  EMPLOYEE
+}
+
+enum OpenType {
+  same_tab
+  new_tab
+}
+
+enum AnnouncementCategory {
+  GENERAL
+  HR
+  IT
+  URGENT
+}
+
+// ─── User ────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  email         String   @unique
+  password_hash String
+  role          Role     @default(EMPLOYEE)
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  announcements Announcement[]
+
+  @@map("users")
+}
+
+// ─── Application Directory ───────────────────────────
+
+model Application {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  description   String
+  icon_url      String   @default("")
+  link_url      String
+  open_type     OpenType @default(new_tab)
+  display_order Int      @default(0)
+  is_active     Boolean  @default(true)
+  allowed_roles Role[]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("applications")
+}
+
+// ─── Announcements ───────────────────────────────────
+
+model Announcement {
+  id             String               @id @default(uuid()) @db.Uuid
+  title          String
+  content        String
+  category       AnnouncementCategory @default(GENERAL)
+  is_pinned      Boolean              @default(false)
+  start_at       DateTime             @default(now())
+  expire_at      DateTime?
+  is_active      Boolean              @default(true)
+  target_roles   Role[]
+  attachment_url String?
+  created_by     String               @db.Uuid
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+
+  creator User @relation(fields: [created_by], references: [id])
+
+  @@map("announcements")
+}
+
+// ─── Future-Ready Tables ─────────────────────────────
+
+model Notification {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  title      String
+  message    String
+  is_read    Boolean  @default(false)
+  link       String?
+  created_at DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  action     String
+  entity     String
+  entity_id  String?
+  details    String?
+  ip_address String?
+  created_at DateTime @default(now())
+
+  @@map("audit_logs")
+}
