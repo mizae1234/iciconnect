@@ -52,10 +52,12 @@ export async function uploadToS3(
 export async function deleteFromS3(fileUrl: string): Promise<void> {
     try {
         const urlObj = new URL(fileUrl);
-        // Extract key from URL: /{bucket}/{key} → key
-        const pathParts = urlObj.pathname.split("/");
-        // Remove empty first element and bucket name
-        const key = pathParts.slice(2).join("/");
+        // CDN URL: https://{bucket}.sgp1.digitaloceanspaces.com/ictconnect/{folder}/{file}
+        // pathname = /ictconnect/{folder}/{file}
+        // key = ictconnect/{folder}/{file} (remove leading slash)
+        const key = urlObj.pathname.startsWith("/")
+            ? urlObj.pathname.substring(1)
+            : urlObj.pathname;
 
         if (key) {
             await s3Client.send(
