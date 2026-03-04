@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({
-    endpoint: process.env.S3_ENDPOINT || "https://space-workflow-dev.sgp1.digitaloceanspaces.com",
+    endpoint: process.env.S3_ENDPOINT || "https://sgp1.digitaloceanspaces.com",
     region: process.env.S3_REGION || "sgp1",
     credentials: {
         accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
@@ -11,10 +11,10 @@ const s3Client = new S3Client({
 });
 
 const BUCKET = process.env.S3_BUCKET || "space-workflow-dev";
+// CDN URL uses bucket as subdomain: https://{bucket}.{region}.digitaloceanspaces.com
 const CDN_ENDPOINT =
     process.env.S3_CDN_ENDPOINT ||
-    process.env.S3_ENDPOINT ||
-    "https://space-workflow-dev.sgp1.digitaloceanspaces.com";
+    `https://${process.env.S3_BUCKET || "space-workflow-dev"}.${process.env.S3_REGION || "sgp1"}.digitaloceanspaces.com`;
 
 /**
  * Upload a file to S3 under ictconnect/{folder}/{filename}
@@ -43,7 +43,7 @@ export async function uploadToS3(
         })
     );
 
-    return `${CDN_ENDPOINT}/${BUCKET}/${key}`;
+    return `${CDN_ENDPOINT}/ictconnect/${safeFolder}/${filename}`;
 }
 
 /**

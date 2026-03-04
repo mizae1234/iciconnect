@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
 import { getIconComponent } from "@/components/shared/icon-picker";

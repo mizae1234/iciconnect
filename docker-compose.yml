@@ -1,0 +1,23 @@
+services:
+  iciconnect:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iciconnect
+    restart: unless-stopped
+    ports:
+      - "3006:3006"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3006
+      - HOSTNAME=0.0.0.0
+      - TZ=Asia/Bangkok
+      - NEXTAUTH_URL=http://iciconnect.icareprojects.com
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external: true
