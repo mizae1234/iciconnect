@@ -32,9 +32,9 @@ export function LandingNavbar() {
                                     <Image
                                         src="/logo.png"
                                         alt="iCare Insurance"
-                                        width={140}
-                                        height={48}
-                                        className="h-9 w-auto"
+                                        width={120}
+                                        height={40}
+                                        className="h-8 w-auto object-contain"
                                     />
                                 </SheetHeader>
                                 <nav className="p-4 space-y-1">
