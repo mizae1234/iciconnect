@@ -49,6 +49,7 @@ import {
     ExternalLink,
 } from "lucide-react";
 import { ROLES, ROLE_LABELS, type RoleType } from "@/lib/constants";
+import { IconPicker, getIconComponent } from "@/components/shared/icon-picker";
 
 interface Application {
     id: string;
@@ -225,8 +226,8 @@ export function ApplicationsClient({
                                     <Textarea value={formDesc} onChange={(e) => setFormDesc(e.target.value)} className="rounded-xl" rows={3} />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>URL ไอคอน</Label>
-                                    <Input value={formIcon} onChange={(e) => setFormIcon(e.target.value)} placeholder="https://example.com/icon.png" className="rounded-xl" />
+                                    <Label>ไอคอน</Label>
+                                    <IconPicker value={formIcon} onChange={setFormIcon} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>URL ลิงก์</Label>
@@ -300,11 +301,12 @@ export function ApplicationsClient({
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                {app.icon_url ? (
-                                                    <img src={app.icon_url} alt="" className="w-5 h-5 object-contain" />
-                                                ) : (
-                                                    <span className="text-xs font-bold text-primary">{app.name[0]}</span>
-                                                )}
+                                                {(() => {
+                                                    const IconComp = getIconComponent(app.icon_url);
+                                                    if (IconComp) return <IconComp className="h-4 w-4 text-primary" />;
+                                                    if (app.icon_url?.startsWith("http")) return <img src={app.icon_url} alt="" className="w-5 h-5 object-contain" />;
+                                                    return <span className="text-xs font-bold text-primary">{app.name[0]}</span>;
+                                                })()}
                                             </div>
                                             <div>
                                                 <p className="font-medium">{app.name}</p>

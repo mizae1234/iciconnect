@@ -80,7 +80,7 @@ async function main() {
             {
                 name: "อีเมล (Outlook)",
                 description: "ระบบอีเมลบริษัท — Microsoft Outlook Web",
-                icon_url: "https://cdn-icons-png.flaticon.com/512/732/732200.png",
+                icon_url: "mail",
                 link_url: "https://outlook.office365.com",
                 open_type: "new_tab",
                 display_order: 1,
@@ -89,7 +89,7 @@ async function main() {
             {
                 name: "ระบบ HR",
                 description: "ลาหยุด, เช็คเวลาเข้างาน, บริการตนเอง HR",
-                icon_url: "https://cdn-icons-png.flaticon.com/512/3135/3135768.png",
+                icon_url: "users",
                 link_url: "https://hr.icare.com",
                 open_type: "new_tab",
                 display_order: 2,
@@ -98,7 +98,7 @@ async function main() {
             {
                 name: "แจ้งซ่อม IT",
                 description: "แจ้งปัญหา IT และติดตามสถานะการซ่อม",
-                icon_url: "https://cdn-icons-png.flaticon.com/512/2920/2920277.png",
+                icon_url: "headphones",
                 link_url: "https://helpdesk.icare.com",
                 open_type: "new_tab",
                 display_order: 3,
@@ -107,7 +107,7 @@ async function main() {
             {
                 name: "คลังเอกสาร",
                 description: "เอกสาร, นโยบาย, คู่มือปฏิบัติงาน (SOP)",
-                icon_url: "https://cdn-icons-png.flaticon.com/512/2991/2991112.png",
+                icon_url: "folder-open",
                 link_url: "https://docs.icare.com",
                 open_type: "new_tab",
                 display_order: 4,
@@ -116,7 +116,7 @@ async function main() {
             {
                 name: "ระบบ CRM ประกันภัย",
                 description: "ระบบจัดการลูกค้าสำหรับตัวแทนประกันภัย",
-                icon_url: "https://cdn-icons-png.flaticon.com/512/3281/3281289.png",
+                icon_url: "shield",
                 link_url: "https://crm.icare.com",
                 open_type: "new_tab",
                 display_order: 5,
@@ -125,7 +125,7 @@ async function main() {
             {
                 name: "ศูนย์อบรม",
                 description: "คอร์สออนไลน์, ใบรับรอง, สื่อการเรียนรู้",
-                icon_url: "https://cdn-icons-png.flaticon.com/512/3976/3976625.png",
+                icon_url: "book-open",
                 link_url: "https://training.icare.com",
                 open_type: "new_tab",
                 display_order: 6,
