@@ -78,6 +78,7 @@ model Announcement {
   is_active      Boolean              @default(true)
   target_roles   Role[]
   attachment_url String?
+  attachments    String[]             @default([])
   created_by     String               @db.Uuid
   created_at     DateTime             @default(now())
   updated_at     DateTime             @updatedAt

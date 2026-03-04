@@ -56,6 +56,7 @@ export async function createAnnouncement(
         is_active: boolean;
         target_roles: string[];
         attachment_url?: string | null;
+        attachments?: string[];
     },
     userId?: string
 ) {
@@ -78,6 +79,7 @@ export async function createAnnouncement(
             is_active: parsed.data.is_active,
             target_roles: parsed.data.target_roles as Role[],
             attachment_url: parsed.data.attachment_url || null,
+            attachments: data.attachments || [],
             created_by: creatorId,
         },
     });
@@ -99,6 +101,7 @@ export async function updateAnnouncement(
         is_active: boolean;
         target_roles: string[];
         attachment_url?: string | null;
+        attachments?: string[];
     }
 ) {
     await requireAdmin();
@@ -120,6 +123,7 @@ export async function updateAnnouncement(
             is_active: parsed.data.is_active,
             target_roles: parsed.data.target_roles as Role[],
             attachment_url: parsed.data.attachment_url || null,
+            attachments: data.attachments || [],
         },
     });
 
