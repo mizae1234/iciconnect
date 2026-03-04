@@ -32,24 +32,24 @@ export default async function HomePage() {
                     <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl hero-glow-1" />
                     <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-white/5 rounded-full blur-3xl hero-glow-2" />
                     {/* Ring decorations */}
-                    <div className="absolute top-1/2 right-[15%] -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-white/10 hero-glow-1" />
-                    <div className="absolute top-1/2 right-[15%] -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/5 hero-glow-2" />
+                    <div className="absolute top-1/2 right-[15%] -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-white/10 hero-glow-1 hidden md:block" />
+                    <div className="absolute top-1/2 right-[15%] -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/5 hero-glow-2 hidden md:block" />
                 </div>
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
-                    <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-20">
+                    <div className="flex flex-col md:flex-row items-center gap-6 md:gap-16">
                         {/* Text side */}
                         <div className="flex-1 text-center md:text-left z-10">
-                            <div className="hero-animate-badge inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 text-white/90 text-sm mb-6">
-                                <CalendarDays className="h-4 w-4" />
+                            <div className="hero-animate-badge inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-white/90 text-xs sm:text-sm mb-4 md:mb-6">
+                                <CalendarDays className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 {format(new Date(), "วันEEEEที่ d MMMM yyyy", { locale: th })}
                             </div>
-                            <h1 className="hero-animate-title text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                            <h1 className="hero-animate-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 md:mb-4 leading-tight">
                                 ยินดีต้อนรับสู่
                                 <br />
                                 <span className="text-white/90">ICI Connect</span>
                             </h1>
-                            <p className="hero-animate-subtitle text-base md:text-lg text-white/70 max-w-md">
+                            <p className="hero-animate-subtitle text-sm sm:text-base md:text-lg text-white/70 max-w-md mx-auto md:mx-0">
                                 ศูนย์รวมประกาศ ข่าวสาร ประชาสัมพันธ์
                                 และแอปพลิเคชันสำหรับพนักงาน iCare Insurance
                             </p>
@@ -57,30 +57,30 @@ export default async function HomePage() {
 
                         {/* Illustration side */}
                         <div className="relative flex-shrink-0 hero-animate-logo z-10">
-                            {/* Floating badges */}
-                            <div className="absolute -top-3 -right-3 md:-right-12 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "0.5s" }}>
+                            {/* Floating badges - hidden on mobile */}
+                            <div className="hidden md:flex absolute -top-3 -right-12 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 items-center gap-2 hero-float z-20" style={{ animationDelay: "0.5s" }}>
                                 <Megaphone className="h-4 w-4 text-[#3B9E96]" />
                                 <span className="text-sm font-medium text-gray-700">ข่าวสาร</span>
                             </div>
 
-                            <div className="absolute top-1/2 -left-6 md:-left-16 -translate-y-1/2 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "2s" }}>
+                            <div className="hidden md:flex absolute top-1/2 -left-16 -translate-y-1/2 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 items-center gap-2 hero-float z-20" style={{ animationDelay: "2s" }}>
                                 <LayoutGrid className="h-4 w-4 text-[#3B9E96]" />
                                 <span className="text-sm font-medium text-gray-700">ศูนย์รวม</span>
                             </div>
 
-                            <div className="absolute -bottom-3 -right-2 md:-right-6 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 flex items-center gap-2 hero-float z-20" style={{ animationDelay: "3.5s" }}>
+                            <div className="hidden md:flex absolute -bottom-3 -right-6 bg-white rounded-xl px-3.5 py-2 shadow-lg shadow-black/10 items-center gap-2 hero-float z-20" style={{ animationDelay: "3.5s" }}>
                                 <CalendarDays className="h-4 w-4 text-[#3B9E96]" />
                                 <span className="text-sm font-medium text-gray-700">ประชาสัมพันธ์</span>
                             </div>
 
                             {/* Main illustration card */}
-                            <div className="bg-white/20 backdrop-blur-sm rounded-3xl p-3 shadow-xl shadow-black/10 border border-white/30">
+                            <div className="bg-white/20 backdrop-blur-sm rounded-2xl md:rounded-3xl p-2 md:p-3 shadow-xl shadow-black/10 border border-white/30">
                                 <Image
                                     src="/hero-illustration.png"
                                     alt="ICI Connect"
                                     width={400}
                                     height={400}
-                                    className="w-52 md:w-60 lg:w-64 h-auto rounded-2xl"
+                                    className="w-40 sm:w-48 md:w-60 lg:w-64 h-auto rounded-xl md:rounded-2xl"
                                     priority
                                 />
                             </div>
