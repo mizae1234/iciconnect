@@ -56,7 +56,7 @@ export default async function AdminDashboard() {
             <Card className="p-6 rounded-2xl border-border/50">
                 <h2 className="text-lg font-semibold mb-4">สัดส่วนตามบทบาท</h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {stats.roleBreakdown.map((item: { role: string; _count: number }) => (
+                    {stats.roleBreakdown.map((item) => (
                         <div
                             key={item.role}
                             className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
@@ -64,7 +64,7 @@ export default async function AdminDashboard() {
                             <span className="text-sm font-medium">
                                 {ROLE_LABELS[item.role as RoleType]}
                             </span>
-                            <span className="text-sm font-bold">{item._count} คน</span>
+                            <span className="text-sm font-bold">{item.count} คน</span>
                         </div>
                     ))}
                 </div>

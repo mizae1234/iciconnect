@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import {
     createApplication,
     updateApplication,
@@ -84,6 +85,7 @@ export function ApplicationsClient({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingApp, setEditingApp] = useState<Application | null>(null);
     const [isPending, startTransition] = useTransition();
+    const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
     const [formName, setFormName] = useState("");
     const [formDesc, setFormDesc] = useState("");
@@ -176,10 +178,11 @@ export function ApplicationsClient({
         });
     }
 
-    async function handleDelete(id: string) {
-        if (!confirm("คุณต้องการลบแอปพลิเคชันนี้หรือไม่?")) return;
+    function handleDeleteConfirm() {
+        if (!deleteTarget) return;
         startTransition(async () => {
-            await deleteApplication(id);
+            await deleteApplication(deleteTarget);
+            setDeleteTarget(null);
             router.refresh();
         });
     }
@@ -349,7 +352,7 @@ export function ApplicationsClient({
                                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(app)}>
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDelete(app.id)}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteTarget(app.id)}>
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
@@ -376,6 +379,15 @@ export function ApplicationsClient({
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                onOpenChange={(open) => !open && setDeleteTarget(null)}
+                title="ยืนยันการลบแอปพลิเคชัน"
+                description="คุณต้องการลบแอปพลิเคชันนี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้"
+                confirmLabel="ลบ"
+                onConfirm={handleDeleteConfirm}
+            />
         </div>
     );
 }

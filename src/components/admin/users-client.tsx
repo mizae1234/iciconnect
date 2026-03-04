@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import {
     createUser,
     updateUser,
@@ -80,6 +81,7 @@ export function UsersClient({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [isPending, startTransition] = useTransition();
+    const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
     const [formName, setFormName] = useState("");
     const [formEmail, setFormEmail] = useState("");
@@ -163,10 +165,11 @@ export function UsersClient({
         });
     }
 
-    async function handleDelete(id: string) {
-        if (!confirm("คุณต้องการลบผู้ใช้นี้หรือไม่?")) return;
+    function handleDeleteConfirm() {
+        if (!deleteTarget) return;
         startTransition(async () => {
-            await deleteUser(id);
+            await deleteUser(deleteTarget);
+            setDeleteTarget(null);
             router.refresh();
         });
     }
@@ -297,7 +300,7 @@ export function UsersClient({
                                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(user)}>
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDelete(user.id)}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteTarget(user.id)}>
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
@@ -324,6 +327,15 @@ export function UsersClient({
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                onOpenChange={(open) => !open && setDeleteTarget(null)}
+                title="ยืนยันการลบผู้ใช้"
+                description="คุณต้องการลบผู้ใช้นี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้"
+                confirmLabel="ลบ"
+                onConfirm={handleDeleteConfirm}
+            />
         </div>
     );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import {
     createAnnouncement,
     updateAnnouncement,
@@ -118,6 +119,7 @@ export function AnnouncementsClient({
     const [editingAnn, setEditingAnn] = useState<Announcement | null>(null);
     const [isPending, startTransition] = useTransition();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
     const [formTitle, setFormTitle] = useState("");
     const [formContent, setFormContent] = useState("");
@@ -278,10 +280,15 @@ export function AnnouncementsClient({
         });
     }
 
-    async function handleDelete(id: string) {
-        if (!confirm("คุณต้องการลบประกาศนี้หรือไม่?")) return;
+    function handleDelete(id: string) {
+        setDeleteTarget(id);
+    }
+
+    function handleDeleteConfirm() {
+        if (!deleteTarget) return;
         startTransition(async () => {
-            await deleteAnnouncement(id);
+            await deleteAnnouncement(deleteTarget);
+            setDeleteTarget(null);
             router.refresh();
         });
     }
@@ -690,6 +697,15 @@ export function AnnouncementsClient({
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                onOpenChange={(open) => !open && setDeleteTarget(null)}
+                title="ยืนยันการลบประกาศ"
+                description="คุณต้องการลบประกาศนี้หรือไม่? ไฟล์แนบทั้งหมดจะถูกลบออกจากระบบด้วย"
+                confirmLabel="ลบ"
+                onConfirm={handleDeleteConfirm}
+            />
         </div>
     );
 }
