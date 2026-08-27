@@ -27,7 +27,6 @@ export async function loginAction(
     redirect("/admin");
 }
 
-export async function logoutAction() {
-    await signOut();
-    redirect("/login");
+export async function logoutAction() {;
+    redirect("/cdn-cgi/access/logout");
 }

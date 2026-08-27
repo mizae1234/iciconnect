@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
@@ -77,10 +77,28 @@ export async function signOut(): Promise<void> {
 }
 
 export async function getSession(): Promise<SessionUser | null> {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("session")?.value;
-    if (!token) return null;
-    return verifyToken(token);
+    const email = (await headers()).get("cf-access-authenticated-user-email");
+    
+    if (email) {
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (user) {
+            return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role as RoleType,
+            };
+        }
+    }
+
+    return null;
+
+    // const cookieStore = await cookies();
+
+    // const token = cookieStore.get("session")?.value;
+    // if (!token) return null;
+    // return verifyToken(token);
 }
 
 export async function requireAuth(): Promise<SessionUser> {

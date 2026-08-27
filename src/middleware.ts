@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { headers } from "next/headers";
+import { prisma } from "./lib/prisma";
 
-const SECRET = new TextEncoder().encode(
-    process.env.AUTH_SECRET || "fallback-secret-change-me"
-);
-
-const PUBLIC_PATHS = ["/", "/login", "/api/auth"];
+const PUBLIC_PATHS = ["/forbidden"];
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -22,32 +19,23 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    const token = request.cookies.get("session")?.value;
+    const email = (await headers()).get("cf-access-authenticated-user-email");
 
-    if (!token) {
-        return NextResponse.redirect(new URL("/login", request.url));
-    }
+    if (!email) {
+        return NextResponse.redirect(new URL("/forbidden", request.url));
+    } else {
+        const user = await prisma.user.findUnique({ where: { email } });
 
-    try {
-        const { payload } = await jwtVerify(token, SECRET);
-        const role = payload.role as string;
-
-        // Admin routes: only SUPER_ADMIN and ADMIN
-        if (pathname.startsWith("/admin")) {
-            if (role !== "SUPER_ADMIN" && role !== "ADMIN") {
-                return NextResponse.redirect(new URL("/", request.url));
-            }
+        if (!user || !user.is_active) {
+            return NextResponse.redirect(new URL("/forbidden", request.url));
         }
 
-        return NextResponse.next();
-    } catch {
-        // Invalid token — redirect to login
-        const response = NextResponse.redirect(new URL("/login", request.url));
-        response.cookies.delete("session");
-        return response;
     }
+
+    return NextResponse.next(); 
 }
 
 export const config = {
     matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+    runtime:"nodejs"
 };
