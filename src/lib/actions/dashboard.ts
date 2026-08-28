@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth";
 export async function getDashboardStats() {
     await requireAdmin();
 
-    const [totalUsers, activeUsers, totalApps, activeApps, totalAnnouncements, activeAnnouncements] =
+    const [totalUsers, activeUsers, totalApps, activeApps, totalAnnouncements, activeAnnouncements, totalEmployees, totalDepartments, totalPositions] =
         await Promise.all([
             prisma.user.count(),
             prisma.user.count({ where: { is_active: true } }),
@@ -14,6 +14,9 @@ export async function getDashboardStats() {
             prisma.application.count({ where: { is_active: true } }),
             prisma.announcement.count(),
             prisma.announcement.count({ where: { is_active: true } }),
+            prisma.employee.count({ where: { employment_status: "ACTIVE" } }),
+            prisma.department.count({ where: { is_active: true } }),
+            prisma.position.count({ where: { is_active: true } }),
         ]);
 
     // Role breakdown
@@ -29,9 +32,13 @@ export async function getDashboardStats() {
         activeApps,
         totalAnnouncements,
         activeAnnouncements,
+        totalEmployees,
+        totalDepartments,
+        totalPositions,
         roleBreakdown: roleBreakdown.map((r) => ({
             role: r.role,
             count: r._count.role,
         })),
     };
 }
+

@@ -15,6 +15,9 @@ import {
     LogOut,
     Menu,
     Home,
+    UserCog,
+    Building2,
+    Briefcase,
 } from "lucide-react";
 import { ROLE_LABELS, type RoleType } from "@/lib/constants";
 
@@ -23,6 +26,9 @@ const NAV_ITEMS = [
     { href: "/admin/users", label: "จัดการผู้ใช้", icon: Users },
     { href: "/admin/applications", label: "จัดการแอปพลิเคชัน", icon: AppWindow },
     { href: "/admin/announcements", label: "จัดการประกาศ", icon: Megaphone },
+    { href: "/admin/employees", label: "จัดการพนักงาน", icon: UserCog },
+    { href: "/admin/departments", label: "จัดการแผนก", icon: Building2 },
+    { href: "/admin/positions", label: "จัดการตำแหน่ง", icon: Briefcase },
 ];
 
 interface AdminSidebarProps {

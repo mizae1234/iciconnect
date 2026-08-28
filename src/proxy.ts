@@ -22,10 +22,11 @@ export async function proxy(request: NextRequest) {
     const email = (await headers()).get("cf-access-authenticated-user-email");
 
     if (!email) {
+
         return NextResponse.redirect(new URL("/forbidden", request.url));
     } else {
         const user = await prisma.user.findUnique({ where: { email } });
-
+        
         if (!user || !user.is_active) {
             return NextResponse.redirect(new URL("/forbidden", request.url));
         }
@@ -37,4 +38,5 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
     matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+    runtime: "nodejs"
 };

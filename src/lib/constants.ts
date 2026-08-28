@@ -56,6 +56,31 @@ export const OPEN_TYPES = ["same_tab", "new_tab"] as const;
 
 export type OpenTypeValue = (typeof OPEN_TYPES)[number];
 
+// ─── Employment Status ───────────────────────────────
+
+export const EMPLOYMENT_STATUSES = [
+    "ACTIVE",
+    "PROBATION",
+    "RESIGNED",
+    "TERMINATED",
+] as const;
+
+export type EmploymentStatusType = (typeof EMPLOYMENT_STATUSES)[number];
+
+export const EMPLOYMENT_STATUS_LABELS: Record<EmploymentStatusType, string> = {
+    ACTIVE: "ทำงานปกติ",
+    PROBATION: "ทดลองงาน",
+    RESIGNED: "ลาออก",
+    TERMINATED: "พ้นสภาพ",
+};
+
+export const EMPLOYMENT_STATUS_COLORS: Record<EmploymentStatusType, string> = {
+    ACTIVE: "bg-green-100 text-green-800 border-green-200",
+    PROBATION: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    RESIGNED: "bg-gray-100 text-gray-800 border-gray-200",
+    TERMINATED: "bg-red-100 text-red-800 border-red-200",
+};
+
 // ─── Validation Schemas ──────────────────────────────
 
 export const loginSchema = z.object({
@@ -94,9 +119,45 @@ export const announcementSchema = z.object({
     attachment_url: z.string().optional().nullable(),
 });
 
+export const departmentSchema = z.object({
+    code: z.string().min(1, "กรุณากรอกรหัสแผนก"),
+    name: z.string().min(1, "กรุณากรอกชื่อแผนก"),
+    name_en: z.string().optional().nullable(),
+    description: z.string().optional().nullable(),
+    parent_id: z.string().optional().nullable(),
+    head_id: z.string().optional().nullable(),
+    is_active: z.boolean().default(true),
+});
+
+export const positionSchema = z.object({
+    code: z.string().min(1, "กรุณากรอกรหัสตำแหน่ง"),
+    name: z.string().min(1, "กรุณากรอกชื่อตำแหน่ง"),
+    level: z.coerce.number().int().min(0),
+    is_active: z.boolean().default(true),
+});
+
+export const employeeSchema = z.object({
+    employee_code: z.string().min(1, "กรุณากรอกรหัสพนักงาน"),
+    first_name: z.string().min(1, "กรุณากรอกชื่อ"),
+    last_name: z.string().min(1, "กรุณากรอกนามสกุล"),
+    nickname: z.string().optional().nullable(),
+    phone: z.string().optional().nullable(),
+    extension: z.string().optional().nullable(),
+    avatar_url: z.string().optional().nullable(),
+    hire_date: z.string().optional().nullable(),
+    employment_status: z.enum(EMPLOYMENT_STATUSES),
+    user_id: z.string().optional().nullable(),
+    department_id: z.string().optional().nullable(),
+    position_id: z.string().optional().nullable(),
+    supervisor_id: z.string().optional().nullable(),
+});
+
 // ─── Types ───────────────────────────────────────────
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UserInput = z.infer<typeof userSchema>;
 export type ApplicationInput = z.infer<typeof applicationSchema>;
 export type AnnouncementInput = z.infer<typeof announcementSchema>;
+export type DepartmentInput = z.infer<typeof departmentSchema>;
+export type PositionInput = z.infer<typeof positionSchema>;
+export type EmployeeInput = z.infer<typeof employeeSchema>;

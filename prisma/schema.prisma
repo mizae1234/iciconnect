@@ -30,6 +30,13 @@ enum AnnouncementCategory {
   URGENT
 }
 
+enum EmploymentStatus {
+  ACTIVE
+  PROBATION
+  RESIGNED
+  TERMINATED
+}
+
 // ─── User ────────────────────────────────────────────
 
 model User {
@@ -42,6 +49,7 @@ model User {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
+  employee      Employee?
   announcements Announcement[]
 
   @@map("users")
@@ -86,6 +94,80 @@ model Announcement {
   creator User @relation(fields: [created_by], references: [id])
 
   @@map("announcements")
+}
+
+// ─── Department (แผนก/ฝ่าย) ──────────────────────────
+
+model Department {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  name_en     String?
+  description String?
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  parent_id   String?      @db.Uuid
+  parent      Department?  @relation("DeptHierarchy", fields: [parent_id], references: [id])
+  children    Department[] @relation("DeptHierarchy")
+
+  head_id     String?   @unique @db.Uuid
+  head        Employee? @relation("DepartmentHead", fields: [head_id], references: [id])
+
+  employees   Employee[] @relation("EmployeeDepartment")
+
+  @@map("departments")
+}
+
+// ─── Position (ตำแหน่งงาน) ────────────────────────────
+
+model Position {
+  id         String   @id @default(uuid()) @db.Uuid
+  code       String   @unique
+  name       String
+  level      Int      @default(0)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  employees  Employee[]
+
+  @@map("positions")
+}
+
+// ─── Employee (ข้อมูลพนักงาน — ฐานกลาง) ──────────────
+
+model Employee {
+  id                  String           @id @default(uuid()) @db.Uuid
+  employee_code       String           @unique
+  first_name          String
+  last_name           String
+  nickname            String?
+  phone               String?
+  extension           String?
+  avatar_url          String?
+  hire_date           DateTime?
+  employment_status   EmploymentStatus @default(ACTIVE)
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
+
+  user_id             String?          @unique @db.Uuid
+  user                User?            @relation(fields: [user_id], references: [id])
+
+  department_id       String?          @db.Uuid
+  department          Department?      @relation("EmployeeDepartment", fields: [department_id], references: [id])
+
+  position_id         String?          @db.Uuid
+  position            Position?        @relation(fields: [position_id], references: [id])
+
+  supervisor_id       String?          @db.Uuid
+  supervisor          Employee?        @relation("Supervision", fields: [supervisor_id], references: [id])
+  subordinates        Employee[]       @relation("Supervision")
+
+  headed_departments  Department[]     @relation("DepartmentHead")
+
+  @@map("employees")
 }
 
 // ─── Future-Ready Tables ─────────────────────────────

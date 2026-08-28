@@ -1,6 +1,6 @@
 import { getDashboardStats } from "@/lib/actions/dashboard";
 import { Card } from "@/components/ui/card";
-import { Users, AppWindow, Megaphone } from "lucide-react";
+import { Users, AppWindow, Megaphone, UserCog, Building2, Briefcase } from "lucide-react";
 import { ROLE_LABELS, type RoleType } from "@/lib/constants";
 
 export default async function AdminDashboard() {
@@ -47,6 +47,39 @@ export default async function AdminDashboard() {
                         <div>
                             <p className="text-sm text-muted-foreground">ประกาศ</p>
                             <p className="text-3xl font-bold">{stats.totalAnnouncements}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-6 rounded-2xl border-border/50">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center">
+                            <UserCog className="h-6 w-6 text-teal-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">พนักงาน</p>
+                            <p className="text-3xl font-bold">{stats.totalEmployees}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-6 rounded-2xl border-border/50">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+                            <Building2 className="h-6 w-6 text-indigo-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">แผนก</p>
+                            <p className="text-3xl font-bold">{stats.totalDepartments}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-6 rounded-2xl border-border/50">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center">
+                            <Briefcase className="h-6 w-6 text-violet-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">ตำแหน่ง</p>
+                            <p className="text-3xl font-bold">{stats.totalPositions}</p>
                         </div>
                     </div>
                 </Card>
