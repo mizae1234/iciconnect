@@ -3,14 +3,27 @@ import type { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "./lib/prisma";
 
-const PUBLIC_PATHS = ["/forbidden"];
+const PUBLIC_PATHS = ["/forbidden", "/api-docs"];
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Allow public paths and static files
+    // Handle CORS preflight for APIs
+    if (request.method === "OPTIONS") {
+        return new NextResponse(null, {
+            status: 204,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization, cf-access-authenticated-user-email",
+            },
+        });
+    }
+
+    // Allow public paths, API routes (for Swagger testing), and static files
     if (
         PUBLIC_PATHS.includes(pathname) ||
+        pathname.startsWith("/api") ||
         pathname.startsWith("/_next") ||
         pathname.startsWith("/favicon") ||
         pathname.startsWith("/logo") ||
