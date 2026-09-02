@@ -83,6 +83,7 @@ export async function createPosition(data: {
     });
 
     revalidatePath("/admin/positions");
+    revalidatePath("/admin/employees");
     return { success: true };
 }
 
@@ -120,6 +121,7 @@ export async function updatePosition(
     });
 
     revalidatePath("/admin/positions");
+    revalidatePath("/admin/employees");
     return { success: true };
 }
 
@@ -136,5 +138,6 @@ export async function deletePosition(id: string) {
     await prisma.position.delete({ where: { id } });
 
     revalidatePath("/admin/positions");
+    revalidatePath("/admin/employees");
     return { success: true };
 }

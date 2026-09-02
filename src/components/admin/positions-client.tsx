@@ -84,11 +84,12 @@ export function PositionsClient({
 
     function navigate(params: Record<string, string>) {
         const sp = new URLSearchParams(searchParams.toString());
+        sp.set("tab", "positions");
         Object.entries(params).forEach(([k, v]) => {
             if (v) sp.set(k, v);
             else sp.delete(k);
         });
-        router.push(`/admin/positions?${sp.toString()}`);
+        router.push(`/admin/employees?${sp.toString()}`);
     }
 
     function handleSearch() {

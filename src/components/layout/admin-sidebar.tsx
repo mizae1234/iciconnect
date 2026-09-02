@@ -23,9 +23,7 @@ import { ROLE_LABELS, type RoleType } from "@/lib/constants";
 
 const NAV_ITEMS = [
     { href: "/admin", label: "แดชบอร์ด", icon: LayoutDashboard },
-    { href: "/admin/personnel", label: "จัดการบุคลากร", icon: UserCog },
-    { href: "/admin/departments", label: "จัดการแผนก", icon: Building2 },
-    { href: "/admin/positions", label: "จัดการตำแหน่ง", icon: Briefcase },
+    { href: "/admin/users", label: "จัดการผู้ใช้", icon: Users },
     { href: "/admin/applications", label: "จัดการแอปพลิเคชัน", icon: AppWindow },
     { href: "/admin/announcements", label: "จัดการประกาศ", icon: Megaphone },
 ];
@@ -89,6 +87,17 @@ function SidebarContent({
                 >
                     <Home className="h-4 w-4" />
                     กลับหน้าแรก
+                </Link>
+
+                <Link
+                    href="/admin/employees"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${pathname.startsWith("/admin/employees")
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        }`}
+                >
+                    <UserCog className="h-4 w-4" />
+                    จัดการพนักงาน
                 </Link>
             </nav>
 

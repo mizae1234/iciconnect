@@ -174,6 +174,7 @@ export function EmployeesClient({
 
     function navigate(params: Record<string, string>) {
         const sp = new URLSearchParams(searchParams.toString());
+        sp.set("tab", "employees");
         Object.entries(params).forEach(([k, v]) => {
             if (v) sp.set(k, v);
             else sp.delete(k);

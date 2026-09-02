@@ -96,6 +96,7 @@ export async function createDepartment(data: {
     });
 
     revalidatePath("/admin/departments");
+    revalidatePath("/admin/employees");
     return { success: true };
 }
 
@@ -140,6 +141,7 @@ export async function updateDepartment(
     });
 
     revalidatePath("/admin/departments");
+    revalidatePath("/admin/employees");
     return { success: true };
 }
 
@@ -165,5 +167,6 @@ export async function deleteDepartment(id: string) {
     await prisma.department.delete({ where: { id } });
 
     revalidatePath("/admin/departments");
+    revalidatePath("/admin/employees");
     return { success: true };
 }

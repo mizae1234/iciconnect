@@ -120,11 +120,12 @@ export function DepartmentsClient({
 
     function navigate(params: Record<string, string>) {
         const sp = new URLSearchParams(searchParams.toString());
+        sp.set("tab", "departments");
         Object.entries(params).forEach(([k, v]) => {
             if (v) sp.set(k, v);
             else sp.delete(k);
         });
-        router.push(`/admin/departments?${sp.toString()}`);
+        router.push(`/admin/employees?${sp.toString()}`);
     }
 
     function handleSearch() {
