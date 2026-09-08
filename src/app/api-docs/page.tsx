@@ -22,6 +22,7 @@ export default function ApiDocsPage() {
                     url: "/api/openapi.json",
                     domNode: containerRef.current,
                     deepLinking: true,
+                    persistAuthorization: true,
                     presets: [
                         (window as any).SwaggerUIBundle.presets.apis,
                     ],

@@ -32,8 +32,39 @@ export async function GET() {
             { name: "Upload", description: "อัปโหลดไฟล์และรูปภาพ (File Upload)" },
         ],
         paths: {
+            "/api/employees/all": {
+                get: {
+                    tags: ["Employees"],
+                    summary: "ดึงพนักงานทั้งหมด (ไม่มี Pagination — สำหรับ Server-to-Server)",
+                    description: "ใช้ API Key (Bearer token) สำหรับเรียกจากโปรเจคภายนอก ส่ง header: Authorization: Bearer <API_SECRET_KEY>",
+                    security: [{ BearerAuth: [] }],
+                    parameters: [
+                        { name: "status", in: "query", schema: { type: "string", enum: ["ACTIVE", "PROBATION", "RESIGNED", "TERMINATED"] }, description: "กรองสถานะพนักงาน" },
+                        { name: "department_id", in: "query", schema: { type: "string" }, description: "กรองตามแผนก (UUID)" },
+                        { name: "include", in: "query", schema: { type: "string", example: "department,position,supervisor" }, description: "เลือก relation ที่ต้องการ (คั่นด้วย comma)" },
+                    ],
+                    responses: {
+                        200: {
+                            description: "ดึงข้อมูลสำเร็จ",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            employees: { type: "array", items: { $ref: "#/components/schemas/Employee" } },
+                                            total: { type: "integer" },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        401: { description: "ไม่ได้รับอนุญาต (API Key ไม่ถูกต้องหรือไม่ได้ส่ง)" },
+                    },
+                },
+            },
             "/api/employees": {
                 get: {
+
                     tags: ["Employees"],
                     summary: "ดึงรายชื่อพนักงานทั้งหมด (พร้อม Pagination & Filter)",
                     parameters: [
@@ -419,6 +450,19 @@ export async function GET() {
                         name: { type: "string", example: "ฝ่ายบุคคล" },
                         name_en: { type: "string", example: "Human Resources" },
                     },
+                },
+            },
+            securitySchemes: {
+                BearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    description: "API Key สำหรับ Server-to-Server (ใส่ค่า API_SECRET_KEY)",
+                },
+                CloudflareAccess: {
+                    type: "apiKey",
+                    in: "header",
+                    name: "cf-access-authenticated-user-email",
+                    description: "Cloudflare Access จะใส่ header นี้ให้อัตโนมัติเมื่อ user ผ่าน authentication แล้ว",
                 },
             },
         },

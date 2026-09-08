@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { apiResponse, apiError, handleOptions } from "@/lib/api-helper";
+import { apiResponse, apiError, apiCatchError, handleOptions } from "@/lib/api-helper";
 import { positionSchema } from "@/lib/constants";
+import { requireAdmin } from "@/lib/auth";
 
 export async function OPTIONS() {
     return handleOptions();
@@ -12,6 +13,7 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await requireAdmin();
         const { id } = await params;
         const body = await request.json();
         const parsed = positionSchema.safeParse(body);
@@ -31,7 +33,7 @@ export async function PUT(
 
         return apiResponse(updated);
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }
 
@@ -40,6 +42,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await requireAdmin();
         const { id } = await params;
 
         const employeeCount = await prisma.employee.count({ where: { position_id: id } });
@@ -50,6 +53,6 @@ export async function DELETE(
         await prisma.position.delete({ where: { id } });
         return apiResponse({ message: "ลบตำแหน่งสำเร็จ" });
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }

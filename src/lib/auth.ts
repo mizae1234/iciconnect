@@ -117,4 +117,26 @@ export async function requireAdmin(): Promise<SessionUser> {
     return session;
 }
 
+/**
+ * Verify API Key from Authorization: Bearer <key> header.
+ * Used for server-to-server communication from other projects.
+ */
+export async function requireApiKey(): Promise<void> {
+    const apiKey = process.env.API_SECRET_KEY;
+    if (!apiKey) {
+        throw new Error("API_SECRET_KEY is not configured");
+    }
+
+    const authHeader = (await headers()).get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        throw new Error("Unauthorized");
+    }
+
+    const token = authHeader.slice(7);
+    if (token !== apiKey) {
+        throw new Error("Unauthorized");
+    }
+}
+
 export { bcrypt };
+

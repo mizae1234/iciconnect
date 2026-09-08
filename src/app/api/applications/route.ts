@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { apiResponse, apiError, handleOptions } from "@/lib/api-helper";
+import { apiResponse, apiError, apiCatchError, handleOptions } from "@/lib/api-helper";
 
 export async function OPTIONS() {
     return handleOptions();
@@ -24,6 +24,6 @@ export async function GET(request: NextRequest) {
 
         return apiResponse({ applications, total: applications.length });
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }

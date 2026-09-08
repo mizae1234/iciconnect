@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { apiResponse, apiError, handleOptions } from "@/lib/api-helper";
+import { apiResponse, apiError, apiCatchError, handleOptions } from "@/lib/api-helper";
 import { employeeSchema } from "@/lib/constants";
+import { requireAuth, requireAdmin } from "@/lib/auth";
 
 export async function OPTIONS() {
     return handleOptions();
@@ -9,6 +10,7 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
     try {
+        await requireAuth();
         const { searchParams } = new URL(request.url);
         const page = parseInt(searchParams.get("page") || "1");
         const pageSize = 10;
@@ -54,12 +56,13 @@ export async function GET(request: NextRequest) {
             page,
         });
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }
 
 export async function POST(request: NextRequest) {
     try {
+        await requireAdmin();
         const body = await request.json();
         const parsed = employeeSchema.safeParse(body);
         if (!parsed.success) {
@@ -97,6 +100,6 @@ export async function POST(request: NextRequest) {
 
         return apiResponse(newEmployee, 201);
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }

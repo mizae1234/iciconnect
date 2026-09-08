@@ -23,9 +23,18 @@ export function apiError(message: string, status = 400) {
     );
 }
 
+/** Map thrown Error messages to proper HTTP status codes */
+export function apiCatchError(err: unknown) {
+    const message = err instanceof Error ? err.message : "Internal Server Error";
+    if (message === "Unauthorized") return apiError(message, 401);
+    if (message === "Forbidden") return apiError(message, 403);
+    return apiError(message, 500);
+}
+
 export function handleOptions() {
     return new NextResponse(null, {
         status: 204,
         headers: CORS_HEADERS,
     });
 }
+

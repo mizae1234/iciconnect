@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { apiResponse, apiError, handleOptions } from "@/lib/api-helper";
+import { apiResponse, apiError, apiCatchError, handleOptions } from "@/lib/api-helper";
 import { employeeSchema } from "@/lib/constants";
+import { requireAuth, requireAdmin } from "@/lib/auth";
 
 export async function OPTIONS() {
     return handleOptions();
@@ -12,6 +13,7 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await requireAuth();
         const { id } = await params;
         const employee = await prisma.employee.findUnique({
             where: { id },
@@ -26,7 +28,7 @@ export async function GET(
         if (!employee) return apiError("ไม่พบข้อมูลพนักงาน", 404);
         return apiResponse(employee);
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }
 
@@ -35,6 +37,7 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await requireAdmin();
         const { id } = await params;
         const body = await request.json();
         const parsed = employeeSchema.safeParse(body);
@@ -63,7 +66,7 @@ export async function PUT(
 
         return apiResponse(updated);
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }
 
@@ -72,6 +75,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await requireAdmin();
         const { id } = await params;
 
         const subordinateCount = await prisma.employee.count({
@@ -91,6 +95,6 @@ export async function DELETE(
         await prisma.employee.delete({ where: { id } });
         return apiResponse({ message: "ลบพนักงานสำเร็จ" });
     } catch (err: unknown) {
-        return apiError(err instanceof Error ? err.message : "Internal Server Error", 500);
+        return apiCatchError(err);
     }
 }
