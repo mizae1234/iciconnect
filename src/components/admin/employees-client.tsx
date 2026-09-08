@@ -11,6 +11,8 @@ import {
     EMPLOYMENT_STATUS_LABELS,
     EMPLOYMENT_STATUS_COLORS,
     EMPLOYMENT_STATUSES,
+    ROLES,
+    ROLE_LABELS,
     type EmploymentStatusType,
 } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -52,6 +54,11 @@ import {
     Building2,
     Briefcase,
     Filter,
+    UserPlus,
+    Key,
+    Mail,
+    Shield,
+    Sparkles,
 } from "lucide-react";
 
 interface Employee {
@@ -69,7 +76,7 @@ interface Employee {
     department_id: string | null;
     position_id: string | null;
     supervisor_id: string | null;
-    department: { id: string; name: string; code: string } | null;
+    department: { id: string; name: string; name_en?: string | null; code: string } | null;
     position: { id: string; name: string; code: string } | null;
     supervisor: {
         id: string;
@@ -89,6 +96,7 @@ interface Employee {
 interface DeptOption {
     id: string;
     name: string;
+    name_en?: string | null;
     code: string;
 }
 
@@ -142,6 +150,10 @@ const EMPTY_FORM = {
     department_id: "",
     position_id: "",
     supervisor_id: "",
+    create_new_user: false,
+    user_email: "",
+    user_password: "",
+    user_role: "EMPLOYEE" as string,
 };
 
 export function EmployeesClient({
@@ -166,6 +178,7 @@ export function EmployeesClient({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [form, setForm] = useState(EMPTY_FORM);
+    const [userLinkMode, setUserLinkMode] = useState<"create" | "link" | "none">("create");
     const [error, setError] = useState("");
     const [deleteTarget, setDeleteTarget] = useState<Employee | null>(null);
     const [showFilters, setShowFilters] = useState(
@@ -188,7 +201,8 @@ export function EmployeesClient({
 
     function openCreate() {
         setEditingId(null);
-        setForm({ ...EMPTY_FORM, employee_code: nextEmployeeCode });
+        setForm({ ...EMPTY_FORM, employee_code: nextEmployeeCode, create_new_user: true });
+        setUserLinkMode("create");
         setError("");
         setDialogOpen(true);
     }
@@ -209,7 +223,12 @@ export function EmployeesClient({
             department_id: emp.department_id || "",
             position_id: emp.position_id || "",
             supervisor_id: emp.supervisor_id || "",
+            create_new_user: false,
+            user_email: "",
+            user_password: "",
+            user_role: "EMPLOYEE",
         });
+        setUserLinkMode(emp.user_id ? "link" : "none");
         setError("");
         setDialogOpen(true);
     }
@@ -243,10 +262,14 @@ export function EmployeesClient({
                 extension: form.extension || null,
                 avatar_url: form.avatar_url || null,
                 hire_date: form.hire_date || null,
-                user_id: form.user_id || null,
+                user_id: userLinkMode === "link" ? form.user_id || null : null,
                 department_id: form.department_id || null,
                 position_id: form.position_id || null,
                 supervisor_id: form.supervisor_id || null,
+                create_new_user: userLinkMode === "create",
+                user_email: userLinkMode === "create" ? form.user_email || null : null,
+                user_password: userLinkMode === "create" ? form.user_password || null : null,
+                user_role: userLinkMode === "create" ? form.user_role || "EMPLOYEE" : null,
             };
 
             const result = editingId
@@ -329,7 +352,7 @@ export function EmployeesClient({
                                 <SelectItem value="_all">ทุกแผนก</SelectItem>
                                 {departmentsList.map((d) => (
                                     <SelectItem key={d.id} value={d.id}>
-                                        {d.name}
+                                        {d.name} {d.name_en ? `(${d.name_en})` : ""}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -422,7 +445,14 @@ export function EmployeesClient({
                                     </TableCell>
                                     <TableCell>
                                         {emp.department ? (
-                                            <span className="text-sm">{emp.department.name}</span>
+                                            <div>
+                                                <span className="text-sm font-medium">{emp.department.name}</span>
+                                                {emp.department.name_en && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                        ({emp.department.name_en})
+                                                    </p>
+                                                )}
+                                            </div>
                                         ) : (
                                             <span className="text-xs text-muted-foreground">—</span>
                                         )}
@@ -663,7 +693,7 @@ export function EmployeesClient({
                                             <SelectItem value="_none">— ไม่ระบุ —</SelectItem>
                                             {departmentsList.map((d) => (
                                                 <SelectItem key={d.id} value={d.id}>
-                                                    {d.name}
+                                                    {d.name} {d.name_en ? `(${d.name_en})` : ""}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -716,32 +746,154 @@ export function EmployeesClient({
                             </div>
                         </div>
 
-                        {/* เชื่อมบัญชีผู้ใช้ */}
-                        <div>
-                            <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                                เชื่อมบัญชีผู้ใช้ (Login Account)
-                            </h3>
-                            <Select
-                                value={form.user_id || "_none"}
-                                onValueChange={(v) =>
-                                    setForm({ ...form, user_id: v === "_none" ? "" : v })
-                                }
-                            >
-                                <SelectTrigger className="rounded-xl">
-                                    <SelectValue placeholder="เลือกบัญชีผู้ใช้" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="_none">— ไม่เชื่อม —</SelectItem>
-                                    {getUserOptions().map((u) => (
-                                        <SelectItem key={u.id} value={u.id}>
-                                            {u.name} ({u.email})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <p className="text-xs text-muted-foreground mt-1.5">
-                                เลือกบัญชี User ที่ยังไม่ถูกเชื่อมกับพนักงานอื่น
-                            </p>
+                        {/* เชื่อมบัญชีผู้ใช้ (Login Account) */}
+                        <div className="rounded-2xl border border-border/80 bg-muted/20 p-4 space-y-4">
+                            <div>
+                                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                    <Shield className="w-4 h-4 text-primary" />
+                                    บัญชีผู้ใช้สำหรับเข้าสู่ระบบ (Login Account)
+                                </h3>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                    กำหนดการเข้าใช้งานระบบ Intranet ของพนักงานคนนี้
+                                </p>
+                            </div>
+
+                            {/* Mode Selector */}
+                            <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/60 rounded-xl text-xs font-medium">
+                                <button
+                                    type="button"
+                                    onClick={() => setUserLinkMode("create")}
+                                    className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                                        userLinkMode === "create"
+                                            ? "bg-primary text-primary-foreground shadow-sm font-semibold"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                    }`}
+                                >
+                                    <UserPlus className="w-3.5 h-3.5" />
+                                    สร้างบัญชีใหม่ทันที
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setUserLinkMode("link")}
+                                    className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                                        userLinkMode === "link"
+                                            ? "bg-primary text-primary-foreground shadow-sm font-semibold"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                    }`}
+                                >
+                                    <Link2 className="w-3.5 h-3.5" />
+                                    เลือกบัญชีที่มีอยู่
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setUserLinkMode("none");
+                                        setForm({ ...form, user_id: "" });
+                                    }}
+                                    className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                                        userLinkMode === "none"
+                                            ? "bg-slate-700 text-white shadow-sm font-semibold"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                    }`}
+                                >
+                                    — ไม่เชื่อมต่อ —
+                                </button>
+                            </div>
+
+                            {/* Mode 1: Create New User */}
+                            {userLinkMode === "create" && (
+                                <div className="space-y-3 pt-1 animate-in fade-in-50 duration-200">
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs flex items-center gap-1">
+                                            <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+                                            อีเมลสำหรับเข้าสู่ระบบ <span className="text-red-500">*</span>
+                                        </Label>
+                                        <Input
+                                            type="email"
+                                            placeholder="example@icare.com"
+                                            className="rounded-xl text-sm"
+                                            value={form.user_email}
+                                            onChange={(e) => setForm({ ...form, user_email: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="space-y-1.5">
+                                            <Label className="text-xs flex items-center gap-1">
+                                                <Key className="w-3.5 h-3.5 text-muted-foreground" />
+                                                รหัสผ่านเริ่มต้น
+                                            </Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Password123 (ค่าเริ่มต้น)"
+                                                className="rounded-xl text-sm"
+                                                value={form.user_password}
+                                                onChange={(e) => setForm({ ...form, user_password: e.target.value })}
+                                            />
+                                            <p className="text-[11px] text-muted-foreground">เว้นว่างไว้จะใช้ Password123</p>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <Label className="text-xs flex items-center gap-1">
+                                                <Shield className="w-3.5 h-3.5 text-muted-foreground" />
+                                                สิทธิ์การใช้งาน (Role)
+                                            </Label>
+                                            <Select
+                                                value={form.user_role || "EMPLOYEE"}
+                                                onValueChange={(v) => setForm({ ...form, user_role: v })}
+                                            >
+                                                <SelectTrigger className="rounded-xl text-sm">
+                                                    <SelectValue placeholder="เลือกสิทธิ์" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {ROLES.map((role) => (
+                                                        <SelectItem key={role} value={role}>
+                                                            {ROLE_LABELS[role]} ({role})
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs">
+                                        <Sparkles className="w-4 h-4 shrink-0" />
+                                        <span>เมื่อกดบันทึก ระบบจะสร้างบัญชีผู้ใช้ใหม่และผูกกับพนักงานคนนี้ให้อัตโนมัติ</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Mode 2: Link Existing User */}
+                            {userLinkMode === "link" && (
+                                <div className="space-y-2 pt-1 animate-in fade-in-50 duration-200">
+                                    <Label className="text-xs">เลือกบัญชีผู้ใช้ที่มีอยู่ในระบบ</Label>
+                                    <Select
+                                        value={form.user_id || "_none"}
+                                        onValueChange={(v) =>
+                                            setForm({ ...form, user_id: v === "_none" ? "" : v })
+                                        }
+                                    >
+                                        <SelectTrigger className="rounded-xl">
+                                            <SelectValue placeholder="เลือกบัญชีผู้ใช้" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="_none">— ไม่เชื่อม —</SelectItem>
+                                            {getUserOptions().map((u) => (
+                                                <SelectItem key={u.id} value={u.id}>
+                                                    {u.name} ({u.email})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-xs text-muted-foreground">
+                                        แสดงเฉพาะบัญชี User ที่ยังไม่ถูกผูกกับพนักงานคนอื่น
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Mode 3: None */}
+                            {userLinkMode === "none" && (
+                                <div className="p-3 rounded-xl bg-muted/40 text-xs text-muted-foreground text-center">
+                                    พนักงานคนนี้จะยังไม่มีบัญชีสำหรับเข้าสู่ระบบ Intranet (สามารถกลับมาสร้างหรือเชื่อมต่อได้ในภายหลัง)
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex justify-end gap-2 pt-2">

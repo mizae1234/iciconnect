@@ -107,20 +107,23 @@ async function main() {
     console.log("✅ สร้างตำแหน่งแล้ว (5 ตำแหน่ง)");
 
     // ─── แผนก ─────────────────────────────────────────────
-    const deptExec = await prisma.department.create({
-        data: { code: "EXEC", name: "ผู้บริหาร", name_en: "Executive" },
+    const deptClaim = await prisma.department.create({
+        data: { code: "CLAIM", name: "เคลม", name_en: "Claim" },
     });
     const deptHR = await prisma.department.create({
-        data: { code: "HR", name: "ฝ่ายบุคคล", name_en: "Human Resources" },
+        data: { code: "HR", name: "บุคคล", name_en: "Human Resources" },
     });
-    const deptIT = await prisma.department.create({
-        data: { code: "IT", name: "ฝ่ายไอที", name_en: "Information Technology" },
+    const deptLegal = await prisma.department.create({
+        data: { code: "Legal", name: "กฏหมาย", name_en: "Legal" },
     });
-    const deptFIN = await prisma.department.create({
-        data: { code: "FIN", name: "ฝ่ายการเงิน", name_en: "Finance" },
+    const deptIA = await prisma.department.create({
+        data: { code: "IA", name: "ตรวจสอบภายใน", name_en: "Internal Audit" },
+    });
+    const deptAccFn = await prisma.department.create({
+        data: { code: "ACC/FN", name: "บัญชี/การเงิน", name_en: "Accounting & Finance" },
     });
 
-    console.log("✅ สร้างแผนกแล้ว (4 แผนก)");
+    console.log("✅ สร้างแผนกแล้ว (5 แผนก: CLAIM, HR, Legal, IA, ACC/FN)");
 
     // ─── พนักงาน ──────────────────────────────────────────
     const empCEO = await prisma.employee.create({
@@ -133,7 +136,7 @@ async function main() {
             hire_date: new Date("2020-01-01"),
             employment_status: "ACTIVE",
             user_id: superAdmin.id,
-            department_id: deptExec.id,
+            department_id: deptLegal.id,
             position_id: posCEO.id,
         },
     });
@@ -148,7 +151,7 @@ async function main() {
             hire_date: new Date("2020-03-15"),
             employment_status: "ACTIVE",
             user_id: admin.id,
-            department_id: deptExec.id,
+            department_id: deptClaim.id,
             position_id: posMGR.id,
             supervisor_id: empCEO.id,
         },
@@ -182,7 +185,7 @@ async function main() {
             hire_date: new Date("2021-08-15"),
             employment_status: "ACTIVE",
             user_id: itUser.id,
-            department_id: deptIT.id,
+            department_id: deptIA.id,
             position_id: posLEAD.id,
             supervisor_id: empCEO.id,
         },
@@ -199,7 +202,7 @@ async function main() {
             hire_date: new Date("2022-01-10"),
             employment_status: "ACTIVE",
             user_id: mgrUser.id,
-            department_id: deptFIN.id,
+            department_id: deptAccFn.id,
             position_id: posMGR.id,
             supervisor_id: empCEO.id,
         },
@@ -233,9 +236,9 @@ async function main() {
             hire_date: new Date("2023-06-15"),
             employment_status: "PROBATION",
             user_id: empUser2.id,
-            department_id: deptIT.id,
+            department_id: deptClaim.id,
             position_id: posSTAFF.id,
-            supervisor_id: empIT.id,
+            supervisor_id: empAdmin.id,
         },
     });
 
@@ -243,19 +246,23 @@ async function main() {
 
     // ─── กำหนดหัวหน้าแผนก ─────────────────────────────────
     await prisma.department.update({
-        where: { id: deptExec.id },
-        data: { head_id: empCEO.id },
+        where: { id: deptClaim.id },
+        data: { head_id: empAdmin.id },
     });
     await prisma.department.update({
         where: { id: deptHR.id },
         data: { head_id: empHR.id },
     });
     await prisma.department.update({
-        where: { id: deptIT.id },
+        where: { id: deptLegal.id },
+        data: { head_id: empCEO.id },
+    });
+    await prisma.department.update({
+        where: { id: deptIA.id },
         data: { head_id: empIT.id },
     });
     await prisma.department.update({
-        where: { id: deptFIN.id },
+        where: { id: deptAccFn.id },
         data: { head_id: empMgr.id },
     });
 
@@ -408,7 +415,7 @@ async function main() {
     console.log("  somying@icare.com     (พนักงาน)");
     console.log("");
     console.log("📦 Employee Module:");
-    console.log("  แผนก: 4 (ผู้บริหาร, ฝ่ายบุคคล, ฝ่ายไอที, ฝ่ายการเงิน)");
+    console.log("  แผนก: 5 (CLAIM, HR, Legal, IA, ACC/FN)");
     console.log("  ตำแหน่ง: 5 (CEO, ผู้จัดการแผนก, หัวหน้าทีม, อาวุโส, เจ้าหน้าที่)");
     console.log("  พนักงาน: 7 คน (เชื่อมกับ User ทั้งหมด)");
     console.log("───────────────────────────────────────");

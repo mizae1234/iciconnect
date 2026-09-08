@@ -55,7 +55,7 @@ export async function getDepartmentsList() {
     await requireAdmin();
     return prisma.department.findMany({
         where: { is_active: true },
-        select: { id: true, name: true, code: true },
+        select: { id: true, name: true, name_en: true, code: true },
         orderBy: { name: "asc" },
     });
 }

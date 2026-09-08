@@ -150,6 +150,10 @@ export const employeeSchema = z.object({
     department_id: z.string().optional().nullable(),
     position_id: z.string().optional().nullable(),
     supervisor_id: z.string().optional().nullable(),
+    create_new_user: z.boolean().optional(),
+    user_email: z.string().optional().nullable(),
+    user_password: z.string().optional().nullable(),
+    user_role: z.enum(ROLES).optional().nullable(),
 });
 
 // ─── Types ───────────────────────────────────────────

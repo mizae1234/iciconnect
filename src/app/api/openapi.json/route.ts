@@ -148,9 +148,9 @@ export async function GET() {
                                     type: "object",
                                     required: ["code", "name"],
                                     properties: {
-                                        code: { type: "string", example: "MKT" },
-                                        name: { type: "string", example: "ฝ่ายการตลาด" },
-                                        name_en: { type: "string", example: "Marketing Department" },
+                                        code: { type: "string", example: "CLAIM" },
+                                        name: { type: "string", example: "เคลม" },
+                                        name_en: { type: "string", example: "Claim" },
                                         parent_id: { type: "string", nullable: true },
                                         head_id: { type: "string", nullable: true },
                                     },

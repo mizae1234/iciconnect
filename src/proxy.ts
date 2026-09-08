@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "./lib/prisma";
 
-const PUBLIC_PATHS = ["/forbidden", "/api-docs"];
+const PUBLIC_PATHS = ["/forbidden", "/api-docs", "/docs"];
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { employeeSchema } from "@/lib/constants";
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
 export async function getEmployees(params: {
@@ -24,6 +25,7 @@ export async function getEmployees(params: {
             { nickname: { contains: params.search, mode: "insensitive" } },
             { employee_code: { contains: params.search, mode: "insensitive" } },
             { phone: { contains: params.search, mode: "insensitive" } },
+            { extension: { contains: params.search, mode: "insensitive" } },
         ];
     }
     if (params.department_id) {
@@ -44,7 +46,7 @@ export async function getEmployees(params: {
             take: pageSize,
             include: {
                 department: {
-                    select: { id: true, name: true, code: true },
+                    select: { id: true, name: true, name_en: true, code: true },
                 },
                 position: {
                     select: { id: true, name: true, code: true },
@@ -128,6 +130,10 @@ export async function createEmployee(data: {
     department_id?: string | null;
     position_id?: string | null;
     supervisor_id?: string | null;
+    create_new_user?: boolean;
+    user_email?: string | null;
+    user_password?: string | null;
+    user_role?: string | null;
 }) {
     await requireAdmin();
 
@@ -144,10 +150,48 @@ export async function createEmployee(data: {
         return { error: "รหัสพนักงานนี้มีอยู่แล้ว" };
     }
 
-    // Check if user is already linked
-    if (parsed.data.user_id) {
+    let finalUserId = parsed.data.user_id || null;
+
+    // Handle auto user creation
+    if (parsed.data.create_new_user) {
+        const email = parsed.data.user_email?.trim().toLowerCase();
+        if (!email) {
+            return { error: "กรุณาระบุอีเมลสำหรับเข้าสู่ระบบ" };
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return { error: "รูปแบบอีเมลไม่ถูกต้อง" };
+        }
+
+        const existingUser = await prisma.user.findUnique({
+            where: { email },
+        });
+        if (existingUser) {
+            return { error: `อีเมล ${email} มีผู้ใช้งานในระบบแล้ว` };
+        }
+
+        const rawPassword = parsed.data.user_password?.trim() || "Password123";
+        if (rawPassword.length < 6) {
+            return { error: "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร" };
+        }
+
+        const password_hash = await bcrypt.hash(rawPassword, 12);
+        const fullName = `${parsed.data.first_name} ${parsed.data.last_name}`;
+
+        const newUser = await prisma.user.create({
+            data: {
+                name: fullName,
+                email,
+                password_hash,
+                role: (parsed.data.user_role as any) || "EMPLOYEE",
+                is_active: true,
+            },
+        });
+        finalUserId = newUser.id;
+    } else if (finalUserId) {
+        // Check if user is already linked
         const linkedEmployee = await prisma.employee.findUnique({
-            where: { user_id: parsed.data.user_id },
+            where: { user_id: finalUserId },
         });
         if (linkedEmployee) {
             return { error: "บัญชีผู้ใช้นี้ถูกเชื่อมกับพนักงานอื่นแล้ว" };
@@ -165,7 +209,7 @@ export async function createEmployee(data: {
             avatar_url: parsed.data.avatar_url || null,
             hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
             employment_status: parsed.data.employment_status,
-            user_id: parsed.data.user_id || null,
+            user_id: finalUserId,
             department_id: parsed.data.department_id || null,
             position_id: parsed.data.position_id || null,
             supervisor_id: parsed.data.supervisor_id || null,
@@ -192,6 +236,10 @@ export async function updateEmployee(
         department_id?: string | null;
         position_id?: string | null;
         supervisor_id?: string | null;
+        create_new_user?: boolean;
+        user_email?: string | null;
+        user_password?: string | null;
+        user_role?: string | null;
     }
 ) {
     await requireAdmin();
@@ -209,10 +257,48 @@ export async function updateEmployee(
         return { error: "รหัสพนักงานนี้มีอยู่แล้ว" };
     }
 
-    // Check user link (exclude self)
-    if (parsed.data.user_id) {
+    let finalUserId = parsed.data.user_id || null;
+
+    // Handle auto user creation when editing
+    if (parsed.data.create_new_user) {
+        const email = parsed.data.user_email?.trim().toLowerCase();
+        if (!email) {
+            return { error: "กรุณาระบุอีเมลสำหรับเข้าสู่ระบบ" };
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return { error: "รูปแบบอีเมลไม่ถูกต้อง" };
+        }
+
+        const existingUser = await prisma.user.findUnique({
+            where: { email },
+        });
+        if (existingUser) {
+            return { error: `อีเมล ${email} มีผู้ใช้งานในระบบแล้ว` };
+        }
+
+        const rawPassword = parsed.data.user_password?.trim() || "Password123";
+        if (rawPassword.length < 6) {
+            return { error: "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร" };
+        }
+
+        const password_hash = await bcrypt.hash(rawPassword, 12);
+        const fullName = `${parsed.data.first_name} ${parsed.data.last_name}`;
+
+        const newUser = await prisma.user.create({
+            data: {
+                name: fullName,
+                email,
+                password_hash,
+                role: (parsed.data.user_role as any) || "EMPLOYEE",
+                is_active: true,
+            },
+        });
+        finalUserId = newUser.id;
+    } else if (finalUserId) {
+        // Check user link (exclude self)
         const linkedEmployee = await prisma.employee.findFirst({
-            where: { user_id: parsed.data.user_id, id: { not: id } },
+            where: { user_id: finalUserId, id: { not: id } },
         });
         if (linkedEmployee) {
             return { error: "บัญชีผู้ใช้นี้ถูกเชื่อมกับพนักงานอื่นแล้ว" };
@@ -236,7 +322,7 @@ export async function updateEmployee(
             avatar_url: parsed.data.avatar_url || null,
             hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
             employment_status: parsed.data.employment_status,
-            user_id: parsed.data.user_id || null,
+            user_id: finalUserId,
             department_id: parsed.data.department_id || null,
             position_id: parsed.data.position_id || null,
             supervisor_id: parsed.data.supervisor_id || null,
