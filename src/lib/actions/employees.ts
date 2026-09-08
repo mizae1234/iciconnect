@@ -52,7 +52,7 @@ export async function getEmployees(params: {
                     select: { id: true, name: true, code: true },
                 },
                 supervisor: {
-                    select: { id: true, first_name: true, last_name: true, employee_code: true },
+                    select: { id: true, first_name: true, last_name: true, nickname: true, employee_code: true },
                 },
                 user: {
                     select: { id: true, name: true, email: true, role: true, is_active: true },
@@ -79,6 +79,7 @@ export async function getEmployeesList() {
             employee_code: true,
             first_name: true,
             last_name: true,
+            nickname: true,
         },
         orderBy: { first_name: "asc" },
     });

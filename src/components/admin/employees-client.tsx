@@ -82,6 +82,7 @@ interface Employee {
         id: string;
         first_name: string;
         last_name: string;
+        nickname?: string | null;
         employee_code: string;
     } | null;
     user: {
@@ -112,6 +113,7 @@ interface EmpOption {
     employee_code: string;
     first_name: string;
     last_name: string;
+    nickname?: string | null;
 }
 
 interface UserOption {
@@ -432,14 +434,14 @@ export function EmployeesClient({
                                         </code>
                                     </TableCell>
                                     <TableCell>
-                                        <div>
-                                            <p className="font-medium">
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                            <span className="font-medium text-foreground">
                                                 {emp.first_name} {emp.last_name}
-                                            </p>
+                                            </span>
                                             {emp.nickname && (
-                                                <p className="text-xs text-muted-foreground">
+                                                <span className="text-sm text-muted-foreground font-normal">
                                                     ({emp.nickname})
-                                                </p>
+                                                </span>
                                             )}
                                         </div>
                                     </TableCell>
@@ -466,9 +468,16 @@ export function EmployeesClient({
                                     </TableCell>
                                     <TableCell>
                                         {emp.supervisor ? (
-                                            <span className="text-sm">
-                                                {emp.supervisor.first_name} {emp.supervisor.last_name}
-                                            </span>
+                                            <div className="flex items-center gap-1.5 flex-wrap">
+                                                <span className="text-sm">
+                                                    {emp.supervisor.first_name} {emp.supervisor.last_name}
+                                                </span>
+                                                {emp.supervisor.nickname && (
+                                                    <span className="text-xs text-muted-foreground font-normal">
+                                                        ({emp.supervisor.nickname})
+                                                    </span>
+                                                )}
+                                            </div>
                                         ) : (
                                             <span className="text-xs text-muted-foreground">—</span>
                                         )}
@@ -737,7 +746,7 @@ export function EmployeesClient({
                                                 .filter((e) => e.id !== editingId)
                                                 .map((e) => (
                                                     <SelectItem key={e.id} value={e.id}>
-                                                        {e.first_name} {e.last_name} ({e.employee_code})
+                                                        {e.first_name} {e.last_name}{e.nickname ? ` (${e.nickname})` : ""} ({e.employee_code})
                                                     </SelectItem>
                                                 ))}
                                         </SelectContent>
