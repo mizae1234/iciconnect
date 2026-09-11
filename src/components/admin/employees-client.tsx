@@ -344,10 +344,10 @@ export function EmployeesClient({
                                 navigate({ department_id: v === "_all" ? "" : v, page: "" })
                             }
                         >
-                            <SelectTrigger className="rounded-xl sm:w-48">
-                                <div className="flex items-center gap-2">
-                                    <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                                    <SelectValue placeholder="ทุกแผนก" />
+                            <SelectTrigger className="rounded-xl sm:w-56 truncate">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <Building2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                                    <span className="truncate"><SelectValue placeholder="ทุกแผนก" /></span>
                                 </div>
                             </SelectTrigger>
                             <SelectContent>
