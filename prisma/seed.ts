@@ -33,8 +33,8 @@ async function main() {
 
     const admin = await prisma.user.create({
         data: {
-            name: "สมศักดิ์ รัตนพล",
-            email: "admin@icare.com",
+            name: "อรรณพ ธรรมเที่ยงธรรม",
+            email: "Unnop.t@icare_insurance.com",
             password_hash: passwordHash,
             role: "ADMIN",
         },
