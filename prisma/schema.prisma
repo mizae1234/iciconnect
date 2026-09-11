@@ -7,7 +7,140 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Enums ───────────────────────────────────────────
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  name          String
+  email         String         @unique
+  password_hash String
+  role          Role           @default(EMPLOYEE)
+  is_active     Boolean        @default(true)
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  announcements Announcement[]
+  employee      Employee?
+
+  @@map("users")
+}
+
+model Application {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  description   String
+  icon_url      String   @default("")
+  link_url      String
+  open_type     OpenType @default(new_tab)
+  display_order Int      @default(0)
+  is_active     Boolean  @default(true)
+  allowed_roles Role[]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("applications")
+}
+
+model Announcement {
+  id             String               @id @default(uuid()) @db.Uuid
+  title          String
+  content        String
+  category       AnnouncementCategory @default(GENERAL)
+  is_pinned      Boolean              @default(false)
+  start_at       DateTime             @default(now())
+  expire_at      DateTime?
+  is_active      Boolean              @default(true)
+  target_roles   Role[]
+  attachment_url String?
+  attachments    String[]             @default([])
+  created_by     String               @db.Uuid
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+  creator        User                 @relation(fields: [created_by], references: [id])
+
+  @@map("announcements")
+}
+
+model Department {
+  id          String       @id @default(uuid()) @db.Uuid
+  code        String       @unique
+  name        String
+  name_en     String?
+  description String?
+  is_active   Boolean      @default(true)
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  parent_id   String?      @db.Uuid
+  head_id     String?      @unique @db.Uuid
+  head        Employee?    @relation("DepartmentHead", fields: [head_id], references: [id])
+  parent      Department?  @relation("DeptHierarchy", fields: [parent_id], references: [id])
+  children    Department[] @relation("DeptHierarchy")
+  employees   Employee[]   @relation("EmployeeDepartment")
+
+  @@map("departments")
+}
+
+model Position {
+  id         String     @id @default(uuid()) @db.Uuid
+  code       String     @unique
+  name       String
+  level      Int        @default(0)
+  is_active  Boolean    @default(true)
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  employees  Employee[]
+
+  @@map("positions")
+}
+
+model Employee {
+  id                 String           @id @default(uuid()) @db.Uuid
+  employee_code      String           @unique
+  first_name         String
+  last_name          String
+  nickname           String?
+  phone              String?
+  extension          String?
+  avatar_url         String?
+  hire_date          DateTime?
+  employment_status  EmploymentStatus @default(ACTIVE)
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @updatedAt
+  user_id            String?          @unique @db.Uuid
+  department_id      String?          @db.Uuid
+  position_id        String?          @db.Uuid
+  supervisor_id      String?          @db.Uuid
+  headed_departments Department?      @relation("DepartmentHead")
+  department         Department?      @relation("EmployeeDepartment", fields: [department_id], references: [id])
+  position           Position?        @relation(fields: [position_id], references: [id])
+  supervisor         Employee?        @relation("Supervision", fields: [supervisor_id], references: [id])
+  subordinates       Employee[]       @relation("Supervision")
+  user               User?            @relation(fields: [user_id], references: [id])
+
+  @@map("employees")
+}
+
+model Notification {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  title      String
+  message    String
+  is_read    Boolean  @default(false)
+  link       String?
+  created_at DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  action     String
+  entity     String
+  entity_id  String?
+  details    String?
+  ip_address String?
+  created_at DateTime @default(now())
+
+  @@map("audit_logs")
+}
 
 enum Role {
   SUPER_ADMIN
@@ -35,164 +168,4 @@ enum EmploymentStatus {
   PROBATION
   RESIGNED
   TERMINATED
-}
-
-// ─── User ────────────────────────────────────────────
-
-model User {
-  id            String   @id @default(uuid()) @db.Uuid
-  name          String
-  email         String   @unique
-  password_hash String
-  role          Role     @default(EMPLOYEE)
-  is_active     Boolean  @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  employee      Employee?
-  announcements Announcement[]
-
-  @@map("users")
-}
-
-// ─── Application Directory ───────────────────────────
-
-model Application {
-  id            String   @id @default(uuid()) @db.Uuid
-  name          String
-  description   String
-  icon_url      String   @default("")
-  link_url      String
-  open_type     OpenType @default(new_tab)
-  display_order Int      @default(0)
-  is_active     Boolean  @default(true)
-  allowed_roles Role[]
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  @@map("applications")
-}
-
-// ─── Announcements ───────────────────────────────────
-
-model Announcement {
-  id             String               @id @default(uuid()) @db.Uuid
-  title          String
-  content        String
-  category       AnnouncementCategory @default(GENERAL)
-  is_pinned      Boolean              @default(false)
-  start_at       DateTime             @default(now())
-  expire_at      DateTime?
-  is_active      Boolean              @default(true)
-  target_roles   Role[]
-  attachment_url String?
-  attachments    String[]             @default([])
-  created_by     String               @db.Uuid
-  created_at     DateTime             @default(now())
-  updated_at     DateTime             @updatedAt
-
-  creator User @relation(fields: [created_by], references: [id])
-
-  @@map("announcements")
-}
-
-// ─── Department (แผนก/ฝ่าย) ──────────────────────────
-
-model Department {
-  id          String   @id @default(uuid()) @db.Uuid
-  code        String   @unique
-  name        String
-  name_en     String?
-  description String?
-  is_active   Boolean  @default(true)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  parent_id   String?      @db.Uuid
-  parent      Department?  @relation("DeptHierarchy", fields: [parent_id], references: [id])
-  children    Department[] @relation("DeptHierarchy")
-
-  head_id     String?   @unique @db.Uuid
-  head        Employee? @relation("DepartmentHead", fields: [head_id], references: [id])
-
-  employees   Employee[] @relation("EmployeeDepartment")
-
-  @@map("departments")
-}
-
-// ─── Position (ตำแหน่งงาน) ────────────────────────────
-
-model Position {
-  id         String   @id @default(uuid()) @db.Uuid
-  code       String   @unique
-  name       String
-  level      Int      @default(0)
-  is_active  Boolean  @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  employees  Employee[]
-
-  @@map("positions")
-}
-
-// ─── Employee (ข้อมูลพนักงาน — ฐานกลาง) ──────────────
-
-model Employee {
-  id                  String           @id @default(uuid()) @db.Uuid
-  employee_code       String           @unique
-  first_name          String
-  last_name           String
-  nickname            String?
-  phone               String?
-  extension           String?
-  avatar_url          String?
-  hire_date           DateTime?
-  employment_status   EmploymentStatus @default(ACTIVE)
-  created_at          DateTime         @default(now())
-  updated_at          DateTime         @updatedAt
-
-  user_id             String?          @unique @db.Uuid
-  user                User?            @relation(fields: [user_id], references: [id])
-
-  department_id       String?          @db.Uuid
-  department          Department?      @relation("EmployeeDepartment", fields: [department_id], references: [id])
-
-  position_id         String?          @db.Uuid
-  position            Position?        @relation(fields: [position_id], references: [id])
-
-  supervisor_id       String?          @db.Uuid
-  supervisor          Employee?        @relation("Supervision", fields: [supervisor_id], references: [id])
-  subordinates        Employee[]       @relation("Supervision")
-
-  headed_departments  Department[]     @relation("DepartmentHead")
-
-  @@map("employees")
-}
-
-// ─── Future-Ready Tables ─────────────────────────────
-
-model Notification {
-  id         String   @id @default(uuid()) @db.Uuid
-  user_id    String   @db.Uuid
-  title      String
-  message    String
-  is_read    Boolean  @default(false)
-  link       String?
-  created_at DateTime @default(now())
-
-  @@map("notifications")
-}
-
-model AuditLog {
-  id         String   @id @default(uuid()) @db.Uuid
-  user_id    String   @db.Uuid
-  action     String
-  entity     String
-  entity_id  String?
-  details    String?
-  ip_address String?
-  created_at DateTime @default(now())
-
-  @@map("audit_logs")
 }
