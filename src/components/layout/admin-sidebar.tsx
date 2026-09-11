@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { logoutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
     LayoutDashboard,
     Users,
@@ -151,6 +151,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="w-64 p-0">
+                        <SheetTitle className="sr-only">เมนูนำทาง</SheetTitle>
                         <SidebarContent user={user} pathname={pathname} />
                     </SheetContent>
                 </Sheet>
