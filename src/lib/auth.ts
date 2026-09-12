@@ -90,6 +90,13 @@ export async function getSession(): Promise<SessionUser | null> {
                 role: user.role as RoleType,
             };
         }
+        
+        return {
+            id: "",
+            name: "",
+            email: email,
+            role: "EMPLOYEE" as RoleType,
+        };
     }
 
     return null;
