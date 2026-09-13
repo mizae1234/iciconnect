@@ -337,23 +337,14 @@ export async function updateEmployee(
 export async function deleteEmployee(id: string) {
     await requireAdmin();
 
-    // Check if this employee is a supervisor
-    const subordinateCount = await prisma.employee.count({
-        where: { supervisor_id: id },
-    });
-    if (subordinateCount > 0) {
-        return { error: `ไม่สามารถลบได้ — เป็นหัวหน้าของพนักงาน ${subordinateCount} คน` };
-    }
-
-    // Check if this employee is a department head
-    const headOf = await prisma.department.findFirst({
-        where: { head_id: id },
-    });
-    if (headOf) {
-        return { error: `ไม่สามารถลบได้ — เป็นหัวหน้าแผนก "${headOf.name}"` };
-    }
-
-    await prisma.employee.delete({ where: { id } });
+    await prisma.$transaction([
+        // ถอดหัวหน้าแผนก (ถ้ามี)
+        prisma.department.updateMany({ where: { head_id: id }, data: { head_id: null } }),
+        // ถอดหัวหน้าของลูกน้อง (ถ้ามี)
+        prisma.employee.updateMany({ where: { supervisor_id: id }, data: { supervisor_id: null } }),
+        // ลบพนักงาน
+        prisma.employee.delete({ where: { id } }),
+    ]);
 
     revalidatePath("/admin/employees");
     return { success: true };
