@@ -337,14 +337,18 @@ export async function updateEmployee(
 export async function deleteEmployee(id: string) {
     await requireAdmin();
 
-    await prisma.$transaction([
-        // ถอดหัวหน้าแผนก (ถ้ามี)
-        prisma.department.updateMany({ where: { head_id: id }, data: { head_id: null } }),
-        // ถอดหัวหน้าของลูกน้อง (ถ้ามี)
-        prisma.employee.updateMany({ where: { supervisor_id: id }, data: { supervisor_id: null } }),
-        // ลบพนักงาน
-        prisma.employee.delete({ where: { id } }),
-    ]);
+    try {
+        await prisma.$transaction([
+            // ถอดหัวหน้าแผนก (ถ้ามี)
+            prisma.department.updateMany({ where: { head_id: id }, data: { head_id: null } }),
+            // ถอดหัวหน้าของลูกน้อง (ถ้ามี)
+            prisma.employee.updateMany({ where: { supervisor_id: id }, data: { supervisor_id: null } }),
+            // ลบพนักงาน
+            prisma.employee.delete({ where: { id } }),
+        ]);
+    } catch {
+        return { error: "ไม่สามารถลบพนักงานได้ — กรุณาลองใหม่อีกครั้ง" };
+    }
 
     revalidatePath("/admin/employees");
     return { success: true };
