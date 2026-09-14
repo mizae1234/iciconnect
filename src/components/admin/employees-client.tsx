@@ -409,6 +409,7 @@ export function EmployeesClient({
                         <TableRow>
                             <TableHead className="w-28">รหัส</TableHead>
                             <TableHead>ชื่อ-นามสกุล</TableHead>
+                            <TableHead>อีเมล</TableHead>
                             <TableHead>แผนก</TableHead>
                             <TableHead>ตำแหน่ง</TableHead>
                             <TableHead>หัวหน้า</TableHead>
@@ -419,7 +420,7 @@ export function EmployeesClient({
                     <TableBody>
                         {employees.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                                <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                                     <UserCog className="h-10 w-10 mx-auto mb-2 opacity-20" />
                                     ไม่พบข้อมูลพนักงาน
                                 </TableCell>
@@ -443,6 +444,13 @@ export function EmployeesClient({
                                                 </span>
                                             )}
                                         </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {emp.email ? (
+                                            <span className="text-sm text-muted-foreground">{emp.email}</span>
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground">—</span>
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         {emp.department ? (
