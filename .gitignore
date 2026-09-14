@@ -69,3 +69,13 @@ logs/
 # Caches
 .eslintcache
 .turbo/
+
+# Database dumps (อาจมีข้อมูลจริง ไม่ควร push)
+database_backup.sql
+*.dump
+
+# Build info
+tsconfig.tsbuildinfo
+
+# Uploads
+/public/uploads/
