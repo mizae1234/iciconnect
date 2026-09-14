@@ -688,7 +688,7 @@ export function EmployeesClient({
                                 ข้อมูลองค์กร
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
+                                <div className="space-y-2 min-w-0">
                                     <Label>แผนก</Label>
                                     <Select
                                         value={form.department_id || "_none"}
@@ -696,7 +696,7 @@ export function EmployeesClient({
                                             setForm({ ...form, department_id: v === "_none" ? "" : v })
                                         }
                                     >
-                                        <SelectTrigger className="rounded-xl">
+                                        <SelectTrigger className="rounded-xl w-full truncate">
                                             <SelectValue placeholder="เลือกแผนก" />
                                         </SelectTrigger>
                                         <SelectContent>
