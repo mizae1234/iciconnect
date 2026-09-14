@@ -97,7 +97,7 @@ model Employee {
   last_name          String
   nickname           String?
   phone              String?
-  extension          String?
+  email              String?
   avatar_url         String?
   hire_date          DateTime?
   employment_status  EmploymentStatus @default(ACTIVE)

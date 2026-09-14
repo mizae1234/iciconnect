@@ -25,7 +25,7 @@ export async function getEmployees(params: {
             { nickname: { contains: params.search, mode: "insensitive" } },
             { employee_code: { contains: params.search, mode: "insensitive" } },
             { phone: { contains: params.search, mode: "insensitive" } },
-            { extension: { contains: params.search, mode: "insensitive" } },
+            { email: { contains: params.search, mode: "insensitive" } },
         ];
     }
     if (params.department_id) {
@@ -123,7 +123,7 @@ export async function createEmployee(data: {
     last_name: string;
     nickname?: string | null;
     phone?: string | null;
-    extension?: string | null;
+    email?: string | null;
     avatar_url?: string | null;
     hire_date?: string | null;
     employment_status: string;
@@ -206,7 +206,7 @@ export async function createEmployee(data: {
             last_name: parsed.data.last_name,
             nickname: parsed.data.nickname || null,
             phone: parsed.data.phone || null,
-            extension: parsed.data.extension || null,
+            email: parsed.data.email || null,
             avatar_url: parsed.data.avatar_url || null,
             hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
             employment_status: parsed.data.employment_status,
@@ -229,7 +229,7 @@ export async function updateEmployee(
         last_name: string;
         nickname?: string | null;
         phone?: string | null;
-        extension?: string | null;
+        email?: string | null;
         avatar_url?: string | null;
         hire_date?: string | null;
         employment_status: string;
@@ -319,7 +319,7 @@ export async function updateEmployee(
             last_name: parsed.data.last_name,
             nickname: parsed.data.nickname || null,
             phone: parsed.data.phone || null,
-            extension: parsed.data.extension || null,
+            email: parsed.data.email || null,
             avatar_url: parsed.data.avatar_url || null,
             hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
             employment_status: parsed.data.employment_status,

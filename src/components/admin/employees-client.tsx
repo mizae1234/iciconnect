@@ -68,7 +68,7 @@ interface Employee {
     last_name: string;
     nickname: string | null;
     phone: string | null;
-    extension: string | null;
+    email: string | null;
     avatar_url: string | null;
     hire_date: Date | null;
     employment_status: string;
@@ -144,7 +144,7 @@ const EMPTY_FORM = {
     last_name: "",
     nickname: "",
     phone: "",
-    extension: "",
+    email: "",
     avatar_url: "",
     hire_date: "",
     employment_status: "ACTIVE" as string,
@@ -180,7 +180,7 @@ export function EmployeesClient({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [form, setForm] = useState(EMPTY_FORM);
-    const [userLinkMode, setUserLinkMode] = useState<"create" | "link" | "none">("create");
+    const [userLinkMode, setUserLinkMode] = useState<"create" | "link" | "none">("none");
     const [error, setError] = useState("");
     const [deleteTarget, setDeleteTarget] = useState<Employee | null>(null);
     const [showFilters, setShowFilters] = useState(
@@ -203,7 +203,7 @@ export function EmployeesClient({
 
     function openCreate() {
         setEditingId(null);
-        setForm({ ...EMPTY_FORM, employee_code: nextEmployeeCode, create_new_user: true });
+        setForm({ ...EMPTY_FORM, create_new_user: true });
         setUserLinkMode("create");
         setError("");
         setDialogOpen(true);
@@ -217,7 +217,7 @@ export function EmployeesClient({
             last_name: emp.last_name,
             nickname: emp.nickname || "",
             phone: emp.phone || "",
-            extension: emp.extension || "",
+            email: emp.email || "",
             avatar_url: emp.avatar_url || "",
             hire_date: emp.hire_date ? new Date(emp.hire_date).toISOString().split("T")[0] : "",
             employment_status: emp.employment_status,
@@ -261,17 +261,17 @@ export function EmployeesClient({
                 ...form,
                 nickname: form.nickname || null,
                 phone: form.phone || null,
-                extension: form.extension || null,
+                email: form.email || null,
                 avatar_url: form.avatar_url || null,
                 hire_date: form.hire_date || null,
-                user_id: userLinkMode === "link" ? form.user_id || null : null,
+                user_id: form.user_id || null,
                 department_id: form.department_id || null,
                 position_id: form.position_id || null,
                 supervisor_id: form.supervisor_id || null,
-                create_new_user: userLinkMode === "create",
-                user_email: userLinkMode === "create" ? form.user_email || null : null,
-                user_password: userLinkMode === "create" ? form.user_password || null : null,
-                user_role: userLinkMode === "create" ? form.user_role || "EMPLOYEE" : null,
+                create_new_user: false,
+                user_email: null,
+                user_password: null,
+                user_role: null,
             };
 
             const result = editingId
@@ -413,14 +413,13 @@ export function EmployeesClient({
                             <TableHead>ตำแหน่ง</TableHead>
                             <TableHead>หัวหน้า</TableHead>
                             <TableHead className="text-center w-24">สถานะ</TableHead>
-                            <TableHead className="text-center w-20">บัญชี</TableHead>
                             <TableHead className="text-right w-28">จัดการ</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {employees.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                                     <UserCog className="h-10 w-10 mx-auto mb-2 opacity-20" />
                                     ไม่พบข้อมูลพนักงาน
                                 </TableCell>
@@ -489,13 +488,6 @@ export function EmployeesClient({
                                         >
                                             {EMPLOYMENT_STATUS_LABELS[emp.employment_status as EmploymentStatusType] || emp.employment_status}
                                         </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {emp.user ? (
-                                            <Link2 className="h-4 w-4 mx-auto text-green-600" />
-                                        ) : (
-                                            <span className="text-xs text-muted-foreground">—</span>
-                                        )}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-1">
@@ -637,12 +629,13 @@ export function EmployeesClient({
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>เบอร์ภายใน</Label>
+                                    <Label>อีเมล</Label>
                                     <Input
-                                        placeholder="1234"
-                                        value={form.extension}
+                                        type="email"
+                                        placeholder="example@icare.com"
+                                        value={form.email}
                                         onChange={(e) =>
-                                            setForm({ ...form, extension: e.target.value })
+                                            setForm({ ...form, email: e.target.value })
                                         }
                                         className="rounded-xl"
                                     />

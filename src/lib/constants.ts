@@ -142,7 +142,7 @@ export const employeeSchema = z.object({
     last_name: z.string().min(1, "กรุณากรอกนามสกุล"),
     nickname: z.string().optional().nullable(),
     phone: z.string().optional().nullable(),
-    extension: z.string().optional().nullable(),
+    email: z.string().optional().nullable(),
     avatar_url: z.string().optional().nullable(),
     hire_date: z.string().optional().nullable(),
     employment_status: z.enum(EMPLOYMENT_STATUSES),

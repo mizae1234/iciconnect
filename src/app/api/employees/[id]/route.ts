@@ -53,7 +53,7 @@ export async function PUT(
                 last_name: parsed.data.last_name,
                 nickname: parsed.data.nickname || null,
                 phone: parsed.data.phone || null,
-                extension: parsed.data.extension || null,
+                email: parsed.data.email || null,
                 avatar_url: parsed.data.avatar_url || null,
                 hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
                 employment_status: parsed.data.employment_status,

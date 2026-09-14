@@ -56,7 +56,7 @@ export async function GET(request: Request) {
                 last_name: true,
                 nickname: true,
                 phone: true,
-                extension: true,
+                email: true,
                 avatar_url: true,
                 hire_date: true,
                 employment_status: true,
