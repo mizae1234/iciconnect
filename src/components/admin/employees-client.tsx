@@ -59,7 +59,9 @@ import {
     Mail,
     Shield,
     Sparkles,
+    FileSpreadsheet,
 } from "lucide-react";
+import { ImportEmployeesDialog } from "@/components/admin/import-employees-dialog";
 
 interface Employee {
     id: string;
@@ -178,6 +180,7 @@ export function EmployeesClient({
     const [isPending, startTransition] = useTransition();
     const [search, setSearch] = useState(currentSearch);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [importDialogOpen, setImportDialogOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [form, setForm] = useState(EMPTY_FORM);
     const [userLinkMode, setUserLinkMode] = useState<"create" | "link" | "none">("none");
@@ -329,10 +332,20 @@ export function EmployeesClient({
                             <Filter className="h-4 w-4" />
                         </Button>
                     </div>
-                    <Button className="rounded-xl gap-2" onClick={openCreate}>
-                        <Plus className="h-4 w-4" />
-                        เพิ่มพนักงาน
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            className="rounded-xl gap-2 border-emerald-500/30 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
+                            onClick={() => setImportDialogOpen(true)}
+                        >
+                            <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            นำเข้า Excel
+                        </Button>
+                        <Button className="rounded-xl gap-2" onClick={openCreate}>
+                            <Plus className="h-4 w-4" />
+                            เพิ่มพนักงาน
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Filters */}
@@ -785,6 +798,14 @@ export function EmployeesClient({
                 title="ยืนยันการลบ"
                 description={`คุณต้องการลบพนักงาน "${deleteTarget?.first_name} ${deleteTarget?.last_name}" (${deleteTarget?.employee_code}) หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`}
                 onConfirm={handleDelete}
+            />
+
+            {/* Import Excel Dialog */}
+            <ImportEmployeesDialog
+                open={importDialogOpen}
+                onOpenChange={setImportDialogOpen}
+                departmentsList={departmentsList}
+                positionsList={positionsList}
             />
         </>
     );

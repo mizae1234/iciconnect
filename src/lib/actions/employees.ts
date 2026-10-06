@@ -353,3 +353,277 @@ export async function deleteEmployee(id: string) {
     revalidatePath("/admin/employees");
     return { success: true };
 }
+
+export interface ImportEmployeeItem {
+    employee_code?: string | null;
+    first_name: string;
+    last_name: string;
+    nickname?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    department_raw?: string | null;
+    position_raw?: string | null;
+    hire_date?: string | null;
+    employment_status?: string | null;
+    user_role?: string | null;
+}
+
+export interface ImportEmployeesResult {
+    success: boolean;
+    total: number;
+    importedCount: number;
+    createdUsersCount: number;
+    errors: Array<{
+        row?: number;
+        code?: string;
+        name: string;
+        reason: string;
+    }>;
+}
+
+export async function importEmployees(
+    items: ImportEmployeeItem[],
+    options?: {
+        createAccounts?: boolean;
+        defaultPassword?: string;
+    }
+): Promise<ImportEmployeesResult> {
+    await requireAdmin();
+
+    const [departments, positions, existingEmployees, existingUsers] = await Promise.all([
+        prisma.department.findMany({
+            select: { id: true, code: true, name: true, name_en: true },
+        }),
+        prisma.position.findMany({
+            select: { id: true, code: true, name: true },
+        }),
+        prisma.employee.findMany({
+            select: { id: true, employee_code: true, email: true },
+        }),
+        prisma.user.findMany({
+            select: { id: true, email: true, employee: { select: { id: true } } },
+        }),
+    ]);
+
+    // Build lookup maps
+    const usedCodes = new Set(
+        existingEmployees.map((e) => e.employee_code.toLowerCase().trim())
+    );
+
+    let maxCodeNum = 0;
+    for (const emp of existingEmployees) {
+        const m = emp.employee_code.match(/ICI-(\d+)/i);
+        if (m) {
+            const num = parseInt(m[1], 10);
+            if (!isNaN(num) && num > maxCodeNum) {
+                maxCodeNum = num;
+            }
+        }
+    }
+
+    // Department matchers
+    const deptMap = new Map<string, string>();
+    for (const d of departments) {
+        deptMap.set(d.code.toLowerCase().trim(), d.id);
+        deptMap.set(d.name.toLowerCase().trim(), d.id);
+        if (d.name_en) {
+            deptMap.set(d.name_en.toLowerCase().trim(), d.id);
+        }
+    }
+
+    // Position matchers
+    const posMap = new Map<string, string>();
+    for (const p of positions) {
+        posMap.set(p.code.toLowerCase().trim(), p.id);
+        posMap.set(p.name.toLowerCase().trim(), p.id);
+    }
+
+    // User email matchers
+    const userEmailMap = new Map<
+        string,
+        { id: string; hasEmployee: boolean }
+    >();
+    for (const u of existingUsers) {
+        userEmailMap.set(u.email.toLowerCase().trim(), {
+            id: u.id,
+            hasEmployee: Boolean(u.employee),
+        });
+    }
+
+    const defaultPassword = options?.defaultPassword?.trim() || "Password123";
+    const passwordHash = await bcrypt.hash(defaultPassword, 12);
+
+    function mapStatus(raw?: string | null): "ACTIVE" | "PROBATION" | "RESIGNED" | "TERMINATED" {
+        if (!raw) return "ACTIVE";
+        const s = raw.trim().toUpperCase();
+        if (s === "PROBATION" || s.includes("ทดลองงาน")) return "PROBATION";
+        if (s === "RESIGNED" || s.includes("ลาออก")) return "RESIGNED";
+        if (s === "TERMINATED" || s.includes("พ้นสภาพ")) return "TERMINATED";
+        return "ACTIVE";
+    }
+
+    function mapRole(raw?: string | null): "SUPER_ADMIN" | "ADMIN" | "HR" | "IT" | "MANAGER" | "EMPLOYEE" {
+        if (!raw) return "EMPLOYEE";
+        const r = raw.trim().toUpperCase();
+        if (r.includes("SUPER_ADMIN") || r.includes("สูงสุด")) return "SUPER_ADMIN";
+        if (r.includes("ADMIN") || r.includes("ผู้ดูแลระบบ")) return "ADMIN";
+        if (r.includes("HR") || r.includes("บุคคล")) return "HR";
+        if (r.includes("IT") || r.includes("ไอที")) return "IT";
+        if (r.includes("MANAGER") || r.includes("ผู้จัดการ")) return "MANAGER";
+        return "EMPLOYEE";
+    }
+
+    let importedCount = 0;
+    let createdUsersCount = 0;
+    const errors: Array<{ row?: number; code?: string; name: string; reason: string }> = [];
+
+    for (let index = 0; index < items.length; index++) {
+        const item = items[index];
+        const rowNumber = index + 1;
+        const fullName = `${item.first_name || ""} ${item.last_name || ""}`.trim() || `แถวที่ ${rowNumber}`;
+
+        if (!item.first_name?.trim() || !item.last_name?.trim()) {
+            errors.push({
+                row: rowNumber,
+                name: fullName,
+                reason: "ข้อมูลไม่ครบถ้วน (ต้องมีชื่อและนามสกุล)",
+            });
+            continue;
+        }
+
+        // Determine employee_code
+        let code = item.employee_code?.trim() || "";
+        if (code) {
+            if (usedCodes.has(code.toLowerCase())) {
+                errors.push({
+                    row: rowNumber,
+                    code,
+                    name: fullName,
+                    reason: `รหัสพนักงาน ${code} มีอยู่ในระบบแล้ว`,
+                });
+                continue;
+            }
+            usedCodes.add(code.toLowerCase());
+        } else {
+            // Auto generate next code
+            do {
+                maxCodeNum++;
+                code = `ICI-${String(maxCodeNum).padStart(4, "0")}`;
+            } while (usedCodes.has(code.toLowerCase()));
+            usedCodes.add(code.toLowerCase());
+        }
+
+        // Find department
+        let departmentId: string | null = null;
+        if (item.department_raw?.trim()) {
+            const raw = item.department_raw.trim().toLowerCase();
+            departmentId = deptMap.get(raw) || null;
+            if (!departmentId) {
+                // Try fuzzy/partial matching if exact match not found
+                for (const d of departments) {
+                    if (
+                        d.name.toLowerCase().includes(raw) ||
+                        raw.includes(d.name.toLowerCase()) ||
+                        (d.name_en && (d.name_en.toLowerCase().includes(raw) || raw.includes(d.name_en.toLowerCase())))
+                    ) {
+                        departmentId = d.id;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Find position
+        let positionId: string | null = null;
+        if (item.position_raw?.trim()) {
+            const raw = item.position_raw.trim().toLowerCase();
+            positionId = posMap.get(raw) || null;
+            if (!positionId) {
+                for (const p of positions) {
+                    if (p.name.toLowerCase().includes(raw) || raw.includes(p.name.toLowerCase())) {
+                        positionId = p.id;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Parse hire_date
+        let hireDate: Date | null = null;
+        if (item.hire_date?.trim()) {
+            const parsed = new Date(item.hire_date.trim());
+            if (!isNaN(parsed.getTime())) {
+                hireDate = parsed;
+            }
+        }
+
+        const cleanEmail = item.email?.trim().toLowerCase() || null;
+        let finalUserId: string | null = null;
+
+        // Auto create user account
+        if (options?.createAccounts && cleanEmail) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(cleanEmail)) {
+                const existingUser = userEmailMap.get(cleanEmail);
+                if (!existingUser) {
+                    try {
+                        const newUser = await prisma.user.create({
+                            data: {
+                                name: fullName,
+                                email: cleanEmail,
+                                password_hash: passwordHash,
+                                role: mapRole(item.user_role),
+                                is_active: true,
+                            },
+                        });
+                        finalUserId = newUser.id;
+                        userEmailMap.set(cleanEmail, { id: newUser.id, hasEmployee: true });
+                        createdUsersCount++;
+                    } catch (e: unknown) {
+                        console.error("Failed to create user account for", cleanEmail, e);
+                    }
+                } else if (!existingUser.hasEmployee) {
+                    finalUserId = existingUser.id;
+                    existingUser.hasEmployee = true;
+                }
+            }
+        }
+
+        try {
+            await prisma.employee.create({
+                data: {
+                    employee_code: code,
+                    first_name: item.first_name.trim(),
+                    last_name: item.last_name.trim(),
+                    nickname: item.nickname?.trim() || null,
+                    phone: item.phone?.trim() || null,
+                    email: cleanEmail,
+                    hire_date: hireDate,
+                    employment_status: mapStatus(item.employment_status),
+                    department_id: departmentId,
+                    position_id: positionId,
+                    user_id: finalUserId,
+                },
+            });
+            importedCount++;
+        } catch (err: unknown) {
+            const reason = err instanceof Error ? err.message : "ไม่สามารถบันทึกลงฐานข้อมูลได้";
+            errors.push({
+                row: rowNumber,
+                code,
+                name: fullName,
+                reason,
+            });
+        }
+    }
+
+    revalidatePath("/admin/employees");
+    return {
+        success: importedCount > 0,
+        total: items.length,
+        importedCount,
+        createdUsersCount,
+        errors,
+    };
+}
+
