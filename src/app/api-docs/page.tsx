@@ -67,7 +67,16 @@ export default function ApiDocsPage() {
                     </a>
                 </div>
             </header>
-            <main className="max-w-7xl mx-auto px-4 py-8">
+            <main className="max-w-7xl mx-auto px-4 py-8 space-y-4">
+                <div className="bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 text-xs flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm">💡 วิธียิงทดสอบ API:</span>
+                        <span>เส้นที่ต้องใช้ API Key ให้กดปุ่ม <strong>"Authorize 🔓"</strong> ด้านขวา แล้วใส่ค่า:</span>
+                        <code className="bg-amber-500/15 px-2 py-0.5 rounded font-mono font-bold select-all">
+                            ici-sk-change-me-to-a-secure-random-string
+                        </code>
+                    </div>
+                </div>
                 <div ref={containerRef} className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 min-h-[600px]" />
             </main>
         </div>

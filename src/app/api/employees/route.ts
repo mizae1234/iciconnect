@@ -40,9 +40,26 @@ export async function GET(request: NextRequest) {
                 skip: (page - 1) * pageSize,
                 take: pageSize,
                 include: {
-                    department: { select: { id: true, name: true, code: true } },
+                    department: {
+                        select: {
+                            id: true,
+                            name: true,
+                            code: true,
+                            head_id: true,
+                            head: {
+                                select: {
+                                    id: true,
+                                    first_name: true,
+                                    last_name: true,
+                                    nickname: true,
+                                    employee_code: true,
+                                    email: true,
+                                },
+                            },
+                        },
+                    },
                     position: { select: { id: true, name: true, code: true } },
-                    supervisor: { select: { id: true, first_name: true, last_name: true, employee_code: true } },
+                    supervisor: { select: { id: true, first_name: true, last_name: true, employee_code: true, nickname: true, email: true } },
                     user: { select: { id: true, name: true, email: true, role: true, is_active: true } },
                 },
             }),

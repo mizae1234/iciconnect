@@ -179,7 +179,6 @@ export function PositionsClient({
                         <TableRow>
                             <TableHead className="w-24">รหัส</TableHead>
                             <TableHead>ชื่อตำแหน่ง</TableHead>
-                            <TableHead className="text-center w-24">ระดับ</TableHead>
                             <TableHead className="text-center w-24">พนักงาน</TableHead>
                             <TableHead className="text-center w-24">สถานะ</TableHead>
                             <TableHead className="text-right w-28">จัดการ</TableHead>
@@ -188,7 +187,7 @@ export function PositionsClient({
                     <TableBody>
                         {positions.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                                <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                                     <Briefcase className="h-10 w-10 mx-auto mb-2 opacity-20" />
                                     ไม่พบข้อมูลตำแหน่ง
                                 </TableCell>
@@ -203,11 +202,6 @@ export function PositionsClient({
                                     </TableCell>
                                     <TableCell>
                                         <span className="font-medium">{pos.name}</span>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant="outline" className="text-[10px]">
-                                            Lv.{pos.level}
-                                        </Badge>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <div className="flex items-center justify-center gap-1">
@@ -300,7 +294,7 @@ export function PositionsClient({
                                 {error}
                             </p>
                         )}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label>รหัสตำแหน่ง *</Label>
                                 <Input
@@ -313,28 +307,16 @@ export function PositionsClient({
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>ระดับ</Label>
+                                <Label>ชื่อตำแหน่ง *</Label>
                                 <Input
-                                    type="number"
-                                    min={0}
-                                    value={form.level}
+                                    placeholder="เช่น ผู้จัดการแผนก"
+                                    value={form.name}
                                     onChange={(e) =>
-                                        setForm({ ...form, level: parseInt(e.target.value) || 0 })
+                                        setForm({ ...form, name: e.target.value })
                                     }
                                     className="rounded-xl"
                                 />
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>ชื่อตำแหน่ง *</Label>
-                            <Input
-                                placeholder="เช่น ผู้จัดการแผนก"
-                                value={form.name}
-                                onChange={(e) =>
-                                    setForm({ ...form, name: e.target.value })
-                                }
-                                className="rounded-xl"
-                            />
                         </div>
                         <div className="flex items-center justify-between">
                             <Label>เปิดใช้งาน</Label>

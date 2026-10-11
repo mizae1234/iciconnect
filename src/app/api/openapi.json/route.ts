@@ -36,12 +36,12 @@ export async function GET() {
                 get: {
                     tags: ["Employees"],
                     summary: "ดึงพนักงานทั้งหมด (ไม่มี Pagination — สำหรับ Server-to-Server)",
-                    description: "ใช้ API Key (Bearer token) สำหรับเรียกจากโปรเจคภายนอก ส่ง header: Authorization: Bearer <API_SECRET_KEY>",
+                    description: "ใช้ API Key (Bearer token) สำหรับเรียกจากโปรเจคภายนอก ส่ง header: Authorization: Bearer <API_SECRET_KEY> (คืนค่าแผนกพร้อมหัวหน้าแผนก department.head, ตำแหน่ง position, และหัวหน้างานตรง supervisor ให้อัตโนมัติ)",
                     security: [{ BearerAuth: [] }],
                     parameters: [
                         { name: "status", in: "query", schema: { type: "string", enum: ["ACTIVE", "PROBATION", "RESIGNED", "TERMINATED"] }, description: "กรองสถานะพนักงาน" },
                         { name: "department_id", in: "query", schema: { type: "string" }, description: "กรองตามแผนก (UUID)" },
-                        { name: "include", in: "query", schema: { type: "string", example: "department,position,supervisor" }, description: "เลือก relation ที่ต้องการ (คั่นด้วย comma)" },
+                        { name: "include", in: "query", schema: { type: "string", example: "department,position,supervisor", default: "department,position,supervisor" }, description: "เลือก relation ที่ต้องการ (ค่าเริ่มต้น: แสดงครบทั้ง department พร้อมหัวหน้าแผนก, position, supervisor)" },
                     ],
                     responses: {
                         200: {
@@ -401,9 +401,47 @@ export async function GET() {
                         email: { type: "string", example: "vichai@icare.com" },
                         hire_date: { type: "string", format: "date" },
                         employment_status: { type: "string", enum: ["ACTIVE", "PROBATION", "RESIGNED", "TERMINATED"] },
-                        department: { type: "object", properties: { id: { type: "string" }, name: { type: "string" } } },
-                        position: { type: "object", properties: { id: { type: "string" }, name: { type: "string" } } },
-                        user: { type: "object", properties: { id: { type: "string" }, email: { type: "string" }, role: { type: "string" } } },
+                        department: {
+                            type: "object",
+                            nullable: true,
+                            properties: {
+                                id: { type: "string" },
+                                code: { type: "string", example: "IT" },
+                                name: { type: "string", example: "เทคโนโลยีสารสนเทศ" },
+                                name_en: { type: "string", example: "Information Technology" },
+                                head_id: { type: "string", nullable: true },
+                                head: {
+                                    type: "object",
+                                    nullable: true,
+                                    description: "หัวหน้าแผนก (Department Head)",
+                                    properties: {
+                                        id: { type: "string" },
+                                        employee_code: { type: "string", example: "ICI-0001" },
+                                        first_name: { type: "string", example: "วิชัย" },
+                                        last_name: { type: "string", example: "สุขสมบูรณ์" },
+                                        nickname: { type: "string", example: "ชัย" },
+                                        email: { type: "string", example: "vichai@icare.com" },
+                                        phone: { type: "string", example: "081-111-1111" },
+                                    },
+                                },
+                            },
+                        },
+                        position: { type: "object", nullable: true, properties: { id: { type: "string" }, name: { type: "string" }, code: { type: "string" } } },
+                        supervisor: {
+                            type: "object",
+                            nullable: true,
+                            description: "หัวหน้างานโดยตรง (Direct Supervisor)",
+                            properties: {
+                                id: { type: "string" },
+                                employee_code: { type: "string", example: "ICI-0001" },
+                                first_name: { type: "string", example: "วิชัย" },
+                                last_name: { type: "string", example: "สุขสมบูรณ์" },
+                                nickname: { type: "string", example: "ชัย" },
+                                email: { type: "string", example: "vichai@icare.com" },
+                                phone: { type: "string", example: "081-111-1111" },
+                            },
+                        },
+                        user: { type: "object", nullable: true, properties: { id: { type: "string" }, email: { type: "string" }, role: { type: "string" } } },
                     },
                 },
                 CreateEmployeeInput: {

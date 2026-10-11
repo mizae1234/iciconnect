@@ -33,17 +33,49 @@ export async function GET(request: Request) {
             where.department_id = departmentId;
         }
 
-        // Build dynamic includes based on query param
-        const includeFields = includeParam.split(",").map((s) => s.trim()).filter(Boolean);
+        // Build dynamic includes based on query param (defaults to all relations if not specified)
+        const includeFields = includeParam
+            ? includeParam.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean)
+            : ["department", "position", "supervisor"];
+
         const include: Record<string, unknown> = {};
         if (includeFields.includes("department")) {
-            include.department = { select: { id: true, name: true, name_en: true, code: true } };
+            include.department = {
+                select: {
+                    id: true,
+                    name: true,
+                    name_en: true,
+                    code: true,
+                    head_id: true,
+                    head: {
+                        select: {
+                            id: true,
+                            employee_code: true,
+                            first_name: true,
+                            last_name: true,
+                            nickname: true,
+                            email: true,
+                            phone: true,
+                        },
+                    },
+                },
+            };
         }
         if (includeFields.includes("position")) {
-            include.position = { select: { id: true, name: true, code: true, level: true } };
+            include.position = { select: { id: true, name: true, code: true } };
         }
         if (includeFields.includes("supervisor")) {
-            include.supervisor = { select: { id: true, first_name: true, last_name: true, nickname: true, employee_code: true } };
+            include.supervisor = {
+                select: {
+                    id: true,
+                    employee_code: true,
+                    first_name: true,
+                    last_name: true,
+                    nickname: true,
+                    email: true,
+                    phone: true,
+                },
+            };
         }
 
         const employees = await prisma.employee.findMany({
