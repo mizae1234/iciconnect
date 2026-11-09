@@ -38,15 +38,6 @@ export async function proxy(request: NextRequest) {
 
         return NextResponse.redirect(new URL("/forbidden", request.url));
     }
-    // } else {
-    //     const user = await prisma.user.findUnique({ where: { email } });
-        
-    //     if (!user || !user.is_active) {
-    //         return NextResponse.redirect(new URL("/forbidden", request.url));
-    //     }
-
-    // }
-
     return NextResponse.next(); 
 }
 
