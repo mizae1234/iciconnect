@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { employeeSchema } from "@/lib/constants";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { cleanOptionalValue } from "@/lib/utils";
 
 export async function getEmployees(params: {
     page?: number;
@@ -557,7 +558,7 @@ export async function importEmployees(
             }
         }
 
-        const cleanEmail = item.email?.trim().toLowerCase() || null;
+        const cleanEmail = cleanOptionalValue(item.email).toLowerCase() || null;
         let finalUserId: string | null = null;
 
         // Auto create user account
@@ -595,8 +596,8 @@ export async function importEmployees(
                     employee_code: code,
                     first_name: item.first_name.trim(),
                     last_name: item.last_name.trim(),
-                    nickname: item.nickname?.trim() || null,
-                    phone: item.phone?.trim() || null,
+                    nickname: cleanOptionalValue(item.nickname) || null,
+                    phone: cleanOptionalValue(item.phone) || null,
                     email: cleanEmail,
                     hire_date: hireDate,
                     employment_status: mapStatus(item.employment_status),

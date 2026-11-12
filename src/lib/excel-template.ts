@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import { cleanOptionalValue } from "@/lib/utils";
 
 export interface DeptOption {
     id: string;
@@ -348,6 +349,11 @@ export function parseExcelFile(
                     }
                 }
             });
+
+            // ค่าแทน "ไม่มีข้อมูล" (N/A, -, ไม่มี ฯลฯ) ในฟิลด์ที่ไม่บังคับ ให้ถือเป็นค่าว่าง
+            for (const key of ["nickname", "email", "phone", "department_raw", "position_raw"]) {
+                rowData[key] = cleanOptionalValue(rowData[key]);
+            }
 
             // Validation per row
             const errors: string[] = [];
