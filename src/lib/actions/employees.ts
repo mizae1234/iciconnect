@@ -74,7 +74,8 @@ export async function getEmployees(params: {
 export async function getEmployeesList() {
     await requireAdmin();
     return prisma.employee.findMany({
-        where: { employment_status: "ACTIVE" },
+        // พนักงานที่ยังทำงานอยู่ (รวมทดลองงาน) เลือกเป็นหัวหน้า/หัวหน้าแผนกได้ — ไม่รวมคนที่ลาออก/พ้นสภาพ
+        where: { employment_status: { in: ["ACTIVE", "PROBATION"] } },
         select: {
             id: true,
             employee_code: true,
