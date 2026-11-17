@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
                 { first_name: { contains: search, mode: "insensitive" } },
                 { last_name: { contains: search, mode: "insensitive" } },
                 { nickname: { contains: search, mode: "insensitive" } },
-                { employee_code: { contains: search, mode: "insensitive" } },
+                { employeeId: { contains: search, mode: "insensitive" } },
                 { phone: { contains: search, mode: "insensitive" } },
             ];
         }
@@ -52,14 +52,14 @@ export async function GET(request: NextRequest) {
                                     first_name: true,
                                     last_name: true,
                                     nickname: true,
-                                    employee_code: true,
+                                    employeeId: true,
                                     email: true,
                                 },
                             },
                         },
                     },
                     position: { select: { id: true, name: true, code: true } },
-                    supervisor: { select: { id: true, first_name: true, last_name: true, employee_code: true, nickname: true, email: true } },
+                    supervisor: { select: { id: true, first_name: true, last_name: true, employeeId: true, nickname: true, email: true } },
                     user: { select: { id: true, name: true, email: true, role: true, is_active: true } },
                 },
             }),
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         }
 
         const existing = await prisma.employee.findUnique({
-            where: { employee_code: parsed.data.employee_code },
+            where: { employeeId: parsed.data.employeeId },
         });
         if (existing) {
             return apiError("รหัสพนักงานนี้มีอยู่แล้ว", 400);
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
 
         const newEmployee = await prisma.employee.create({
             data: {
-                employee_code: parsed.data.employee_code,
+                employeeId: parsed.data.employeeId,
                 first_name: parsed.data.first_name,
                 last_name: parsed.data.last_name,
                 nickname: parsed.data.nickname || null,

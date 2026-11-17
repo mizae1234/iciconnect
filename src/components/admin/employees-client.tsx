@@ -67,7 +67,7 @@ import { ImportEmployeesDialog } from "@/components/admin/import-employees-dialo
 
 interface Employee {
     id: string;
-    employee_code: string;
+    employeeId: string;
     first_name: string;
     last_name: string;
     nickname: string | null;
@@ -88,7 +88,7 @@ interface Employee {
         first_name: string;
         last_name: string;
         nickname?: string | null;
-        employee_code: string;
+        employeeId: string;
     } | null;
     user: {
         id: string;
@@ -115,7 +115,7 @@ interface PosOption {
 
 interface EmpOption {
     id: string;
-    employee_code: string;
+    employeeId: string;
     first_name: string;
     last_name: string;
     nickname?: string | null;
@@ -144,7 +144,7 @@ interface Props {
 }
 
 const EMPTY_FORM = {
-    employee_code: "",
+    employeeId: "",
     first_name: "",
     last_name: "",
     nickname: "",
@@ -219,7 +219,7 @@ export function EmployeesClient({
     function openEdit(emp: Employee) {
         setEditingId(emp.id);
         setForm({
-            employee_code: emp.employee_code,
+            employeeId: emp.employeeId,
             first_name: emp.first_name,
             last_name: emp.last_name,
             nickname: emp.nickname || "",
@@ -455,7 +455,7 @@ export function EmployeesClient({
                                 <TableRow key={emp.id}>
                                     <TableCell>
                                         <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                                            {emp.employee_code}
+                                            {emp.employeeId}
                                         </code>
                                     </TableCell>
                                     <TableCell>
@@ -617,9 +617,9 @@ export function EmployeesClient({
                                     <Label>รหัสพนักงาน *</Label>
                                     <Input
                                         placeholder="ICI-0001"
-                                        value={form.employee_code}
+                                        value={form.employeeId}
                                         onChange={(e) =>
-                                            setForm({ ...form, employee_code: e.target.value })
+                                            setForm({ ...form, employeeId: e.target.value })
                                         }
                                         className="rounded-xl"
                                     />
@@ -779,7 +779,7 @@ export function EmployeesClient({
                                                 .filter((e) => e.id !== editingId)
                                                 .map((e) => (
                                                     <SelectItem key={e.id} value={e.id}>
-                                                        {e.first_name} {e.last_name}{e.nickname ? ` (${e.nickname})` : ""} ({e.employee_code})
+                                                        {e.first_name} {e.last_name}{e.nickname ? ` (${e.nickname})` : ""} ({e.employeeId})
                                                     </SelectItem>
                                                 ))}
                                         </SelectContent>
@@ -829,7 +829,7 @@ export function EmployeesClient({
                 open={!!deleteTarget}
                 onOpenChange={(open) => !open && setDeleteTarget(null)}
                 title="ยืนยันการลบ"
-                description={`คุณต้องการลบพนักงาน "${deleteTarget?.first_name} ${deleteTarget?.last_name}" (${deleteTarget?.employee_code}) หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`}
+                description={`คุณต้องการลบพนักงาน "${deleteTarget?.first_name} ${deleteTarget?.last_name}" (${deleteTarget?.employeeId}) หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`}
                 onConfirm={handleDelete}
             />
 

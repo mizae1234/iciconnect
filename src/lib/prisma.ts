@@ -12,7 +12,8 @@ function createPrismaClient() {
 
 const hasLatestSchema =
   globalForPrisma.prisma &&
-  "roomReservable" in (globalForPrisma.prisma.employee.fields ?? {});
+  "roomReservable" in (globalForPrisma.prisma.employee.fields ?? {}) &&
+  "employeeId" in (globalForPrisma.prisma.employee.fields ?? {});
 
 export const prisma = hasLatestSchema
   ? globalForPrisma.prisma!

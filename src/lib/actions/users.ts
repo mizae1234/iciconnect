@@ -146,7 +146,7 @@ export async function deleteUser(id: string) {
     // เช็ค employee ที่ผูกอยู่
     const linkedEmployee = await prisma.employee.findFirst({ where: { user_id: id } });
     if (linkedEmployee) {
-        return { error: `ไม่สามารถลบได้ — ผูกกับพนักงาน "${linkedEmployee.first_name} ${linkedEmployee.last_name}" (${linkedEmployee.employee_code})` };
+        return { error: `ไม่สามารถลบได้ — ผูกกับพนักงาน "${linkedEmployee.first_name} ${linkedEmployee.last_name}" (${linkedEmployee.employeeId})` };
     }
 
     // ลบ announcements ที่สร้างโดย user นี้ + ลบ user ใน transaction

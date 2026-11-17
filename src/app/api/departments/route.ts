@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
             where,
             orderBy: { created_at: "asc" },
             include: {
-                head: { select: { id: true, first_name: true, last_name: true, employee_code: true } },
+                head: { select: { id: true, first_name: true, last_name: true, employeeId: true } },
                 parent: { select: { id: true, name: true, code: true } },
                 _count: { select: { employees: true, children: true } },
             },

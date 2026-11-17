@@ -23,7 +23,7 @@ export async function GET(
                         head: {
                             select: {
                                 id: true,
-                                employee_code: true,
+                                employeeId: true,
                                 first_name: true,
                                 last_name: true,
                                 nickname: true,
@@ -62,7 +62,7 @@ export async function PUT(
         const updated = await prisma.employee.update({
             where: { id },
             data: {
-                employee_code: parsed.data.employee_code,
+                employeeId: parsed.data.employeeId,
                 first_name: parsed.data.first_name,
                 last_name: parsed.data.last_name,
                 nickname: parsed.data.nickname || null,

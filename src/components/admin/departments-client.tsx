@@ -61,7 +61,7 @@ interface Department {
         id: string;
         first_name: string;
         last_name: string;
-        employee_code: string;
+        employeeId: string;
     } | null;
     parent: {
         id: string;
@@ -76,7 +76,7 @@ interface Department {
 
 interface EmployeeOption {
     id: string;
-    employee_code: string;
+    employeeId: string;
     first_name: string;
     last_name: string;
 }
@@ -430,7 +430,7 @@ export function DepartmentsClient({
                                     <SelectItem value="_none">— ไม่กำหนด —</SelectItem>
                                     {employeesList.map((emp) => (
                                         <SelectItem key={emp.id} value={emp.id}>
-                                            {emp.first_name} {emp.last_name} ({emp.employee_code})
+                                            {emp.first_name} {emp.last_name} ({emp.employeeId})
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

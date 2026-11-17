@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
                     role: true,
                     is_active: true,
                     created_at: true,
-                    employee: { select: { id: true, employee_code: true, first_name: true, last_name: true } },
+                    employee: { select: { id: true, employeeId: true, first_name: true, last_name: true } },
                 },
             }),
             prisma.user.count({ where }),

@@ -30,7 +30,7 @@ export async function getDepartments(params: {
             take: pageSize,
             include: {
                 head: {
-                    select: { id: true, first_name: true, last_name: true, employee_code: true },
+                    select: { id: true, first_name: true, last_name: true, employeeId: true },
                 },
                 parent: {
                     select: { id: true, name: true, code: true },

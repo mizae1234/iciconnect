@@ -128,7 +128,7 @@ async function main() {
     // ─── พนักงาน ──────────────────────────────────────────
     const empCEO = await prisma.employee.create({
         data: {
-            employee_code: "ICI-0001",
+            employeeId: "ICI-0001",
             first_name: "วิชัย",
             last_name: "สุขสมบูรณ์",
             nickname: "ชัย",
@@ -143,7 +143,7 @@ async function main() {
 
     const empAdmin = await prisma.employee.create({
         data: {
-            employee_code: "ICI-0002",
+            employeeId: "ICI-0002",
             first_name: "สมศักดิ์",
             last_name: "รัตนพล",
             nickname: "ศักดิ์",
@@ -159,7 +159,7 @@ async function main() {
 
     const empHR = await prisma.employee.create({
         data: {
-            employee_code: "ICI-0003",
+            employeeId: "ICI-0003",
             first_name: "พรทิพย์",
             last_name: "วงศ์สวัสดิ์",
             nickname: "ทิพย์",
@@ -176,7 +176,7 @@ async function main() {
 
     const empIT = await prisma.employee.create({
         data: {
-            employee_code: "ICI-0004",
+            employeeId: "ICI-0004",
             first_name: "ธนกร",
             last_name: "เทคโนโลยี",
             nickname: "กร",
@@ -193,7 +193,7 @@ async function main() {
 
     const empMgr = await prisma.employee.create({
         data: {
-            employee_code: "ICI-0005",
+            employeeId: "ICI-0005",
             first_name: "ประวิทย์",
             last_name: "ผู้จัดการ",
             nickname: "วิทย์",
@@ -210,7 +210,7 @@ async function main() {
 
     await prisma.employee.create({
         data: {
-            employee_code: "ICI-0006",
+            employeeId: "ICI-0006",
             first_name: "สมชาย",
             last_name: "ใจดี",
             nickname: "ชาย",
@@ -227,7 +227,7 @@ async function main() {
 
     await prisma.employee.create({
         data: {
-            employee_code: "ICI-0007",
+            employeeId: "ICI-0007",
             first_name: "สมหญิง",
             last_name: "รักงาน",
             nickname: "หญิง",

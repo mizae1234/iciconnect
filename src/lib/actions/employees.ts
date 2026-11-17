@@ -24,7 +24,7 @@ export async function getEmployees(params: {
             { first_name: { contains: params.search, mode: "insensitive" } },
             { last_name: { contains: params.search, mode: "insensitive" } },
             { nickname: { contains: params.search, mode: "insensitive" } },
-            { employee_code: { contains: params.search, mode: "insensitive" } },
+            { employeeId: { contains: params.search, mode: "insensitive" } },
             { phone: { contains: params.search, mode: "insensitive" } },
             { email: { contains: params.search, mode: "insensitive" } },
         ];
@@ -53,7 +53,7 @@ export async function getEmployees(params: {
                     select: { id: true, name: true, code: true },
                 },
                 supervisor: {
-                    select: { id: true, first_name: true, last_name: true, nickname: true, employee_code: true },
+                    select: { id: true, first_name: true, last_name: true, nickname: true, employeeId: true },
                 },
                 user: {
                     select: { id: true, name: true, email: true, role: true, is_active: true },
@@ -78,7 +78,7 @@ export async function getEmployeesList() {
         where: { employment_status: { in: ["ACTIVE", "PROBATION"] } },
         select: {
             id: true,
-            employee_code: true,
+            employeeId: true,
             first_name: true,
             last_name: true,
             nickname: true,
@@ -102,15 +102,15 @@ export async function getUnlinkedUsers() {
 export async function getNextEmployeeCode() {
     await requireAdmin();
     const lastEmployee = await prisma.employee.findFirst({
-        orderBy: { employee_code: "desc" },
-        select: { employee_code: true },
+        orderBy: { employeeId: "desc" },
+        select: { employeeId: true },
     });
 
     if (!lastEmployee) {
         return "ICI-0001";
     }
 
-    const match = lastEmployee.employee_code.match(/ICI-(\d+)/);
+    const match = lastEmployee.employeeId.match(/ICI-(\d+)/);
     if (!match) {
         return "ICI-0001";
     }
@@ -120,7 +120,7 @@ export async function getNextEmployeeCode() {
 }
 
 export async function createEmployee(data: {
-    employee_code: string;
+    employeeId: string;
     first_name: string;
     last_name: string;
     nickname?: string | null;
@@ -148,7 +148,7 @@ export async function createEmployee(data: {
 
     // Check unique employee code
     const existing = await prisma.employee.findUnique({
-        where: { employee_code: parsed.data.employee_code },
+        where: { employeeId: parsed.data.employeeId },
     });
     if (existing) {
         return { error: "รหัสพนักงานนี้มีอยู่แล้ว" };
@@ -204,7 +204,7 @@ export async function createEmployee(data: {
 
     await prisma.employee.create({
         data: {
-            employee_code: parsed.data.employee_code,
+            employeeId: parsed.data.employeeId,
             first_name: parsed.data.first_name,
             last_name: parsed.data.last_name,
             nickname: parsed.data.nickname || null,
@@ -228,7 +228,7 @@ export async function createEmployee(data: {
 export async function updateEmployee(
     id: string,
     data: {
-        employee_code: string;
+        employeeId: string;
         first_name: string;
         last_name: string;
         nickname?: string | null;
@@ -257,7 +257,7 @@ export async function updateEmployee(
 
     // Check unique employee code (exclude self)
     const existing = await prisma.employee.findFirst({
-        where: { employee_code: parsed.data.employee_code, id: { not: id } },
+        where: { employeeId: parsed.data.employeeId, id: { not: id } },
     });
     if (existing) {
         return { error: "รหัสพนักงานนี้มีอยู่แล้ว" };
@@ -319,7 +319,7 @@ export async function updateEmployee(
     await prisma.employee.update({
         where: { id },
         data: {
-            employee_code: parsed.data.employee_code,
+            employeeId: parsed.data.employeeId,
             first_name: parsed.data.first_name,
             last_name: parsed.data.last_name,
             nickname: parsed.data.nickname || null,
@@ -378,7 +378,7 @@ export async function deleteEmployee(id: string) {
 }
 
 export interface ImportEmployeeItem {
-    employee_code?: string | null;
+    employeeId?: string | null;
     first_name: string;
     last_name: string;
     nickname?: string | null;
@@ -421,7 +421,7 @@ export async function importEmployees(
             select: { id: true, code: true, name: true },
         }),
         prisma.employee.findMany({
-            select: { id: true, employee_code: true, email: true },
+            select: { id: true, employeeId: true, email: true },
         }),
         prisma.user.findMany({
             select: { id: true, email: true, employee: { select: { id: true } } },
@@ -430,12 +430,12 @@ export async function importEmployees(
 
     // Build lookup maps
     const usedCodes = new Set(
-        existingEmployees.map((e) => e.employee_code.toLowerCase().trim())
+        existingEmployees.map((e) => e.employeeId.toLowerCase().trim())
     );
 
     let maxCodeNum = 0;
     for (const emp of existingEmployees) {
-        const m = emp.employee_code.match(/ICI-(\d+)/i);
+        const m = emp.employeeId.match(/ICI-(\d+)/i);
         if (m) {
             const num = parseInt(m[1], 10);
             if (!isNaN(num) && num > maxCodeNum) {
@@ -514,8 +514,8 @@ export async function importEmployees(
             continue;
         }
 
-        // Determine employee_code
-        let code = item.employee_code?.trim() || "";
+        // Determine employeeId
+        let code = item.employeeId?.trim() || "";
         if (code) {
             if (usedCodes.has(code.toLowerCase())) {
                 errors.push({
@@ -615,7 +615,7 @@ export async function importEmployees(
         try {
             await prisma.employee.create({
                 data: {
-                    employee_code: code,
+                    employeeId: code,
                     first_name: item.first_name.trim(),
                     last_name: item.last_name.trim(),
                     nickname: cleanOptionalValue(item.nickname) || null,

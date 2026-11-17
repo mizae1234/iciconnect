@@ -16,7 +16,7 @@ export interface PosOption {
 
 export interface ParsedEmployeeRow {
     rowIndex: number;
-    employee_code: string;
+    employeeId: string;
     first_name: string;
     last_name: string;
     nickname: string;
@@ -132,14 +132,15 @@ export function downloadEmployeeTemplate(
 function normalizeHeader(header: string): string {
     const clean = header.trim().toLowerCase().replace(/[\*\(\)\s_-]/g, "");
 
-    // employee_code
+    // employeeId
     if (
         clean.includes("รหัสพนักงาน") ||
+        clean.includes("employeeid") ||
         clean.includes("employeecode") ||
         clean === "code" ||
         clean === "รหัส"
     ) {
-        return "employee_code";
+        return "employeeId";
     }
 
     // first_name
@@ -323,7 +324,7 @@ export function parseExcelFile(
             if (isAllEmpty) continue;
 
             const rowData: Record<string, string> = {
-                employee_code: "",
+                employeeId: "",
                 first_name: "",
                 last_name: "",
                 nickname: "",
@@ -373,7 +374,7 @@ export function parseExcelFile(
 
             rows.push({
                 rowIndex: i + 1,
-                employee_code: rowData.employee_code,
+                employeeId: rowData.employeeId,
                 first_name: rowData.first_name,
                 last_name: rowData.last_name,
                 nickname: rowData.nickname,

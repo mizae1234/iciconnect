@@ -139,7 +139,7 @@ export function ImportEmployeesDialog({
 
         startTransition(async () => {
             const payload = validRows.map((r) => ({
-                employee_code: r.employee_code || null,
+                employeeId: r.employeeId || null,
                 first_name: r.first_name,
                 last_name: r.last_name,
                 nickname: r.nickname || null,
@@ -541,8 +541,8 @@ export function ImportEmployeesDialog({
                                                                 {row.rowIndex}
                                                             </TableCell>
                                                             <TableCell className="text-xs font-mono">
-                                                                {row.employee_code ? (
-                                                                    <code>{row.employee_code}</code>
+                                                                {row.employeeId ? (
+                                                                    <code>{row.employeeId}</code>
                                                                 ) : (
                                                                     <span className="text-muted-foreground italic">
                                                                         (อัตโนมัติ)

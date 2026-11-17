@@ -137,7 +137,7 @@ export const positionSchema = z.object({
 });
 
 export const employeeSchema = z.object({
-    employee_code: z.string().min(1, "กรุณากรอกรหัสพนักงาน"),
+    employeeId: z.string().min(1, "กรุณากรอกรหัสพนักงาน"),
     first_name: z.string().min(1, "กรุณากรอกชื่อ"),
     last_name: z.string().min(1, "กรุณากรอกนามสกุล"),
     nickname: z.string().optional().nullable(),

@@ -42,7 +42,7 @@ export async function GET() {
                         { name: "status", in: "query", schema: { type: "string", enum: ["ACTIVE", "PROBATION", "RESIGNED", "TERMINATED"] }, description: "กรองสถานะพนักงาน" },
                         { name: "department_code", in: "query", schema: { type: "string", example: "IT" }, description: "กรองตามรหัสแผนกหรือชื่อแผนก" },
                         { name: "position_code", in: "query", schema: { type: "string", example: "STAFF" }, description: "กรองตามรหัสตำแหน่งหรือชื่อตำแหน่ง" },
-                        { name: "employee_code", in: "query", schema: { type: "string", example: "ICI96" }, description: "กรองตามรหัสพนักงาน" },
+                        { name: "employeeId", in: "query", schema: { type: "string", example: "ICI96" }, description: "กรองตามรหัสพนักงาน" },
                         { name: "roomReservable", in: "query", schema: { type: "boolean", example: true }, description: "กรองตามสิทธิ์จองห้องประชุม (true/false)" },
                         { name: "include", in: "query", schema: { type: "string", example: "department,position,supervisor", default: "department,position,supervisor" }, description: "เลือก relation ที่ต้องการ (ค่าเริ่มต้น: แสดงครบทั้ง department พร้อมหัวหน้าแผนก, position, supervisor)" },
                     ],
@@ -396,7 +396,7 @@ export async function GET() {
                     type: "object",
                     properties: {
                         id: { type: "string" },
-                        employee_code: { type: "string", example: "ICI-0001" },
+                        employeeId: { type: "string", example: "ICI-0001" },
                         first_name: { type: "string", example: "วิชัย" },
                         last_name: { type: "string", example: "สุขสมบูรณ์" },
                         nickname: { type: "string", example: "ชัย" },
@@ -420,7 +420,7 @@ export async function GET() {
                                     description: "หัวหน้าแผนก (Department Head)",
                                     properties: {
                                         id: { type: "string" },
-                                        employee_code: { type: "string", example: "ICI-0001" },
+                                        employeeId: { type: "string", example: "ICI-0001" },
                                         first_name: { type: "string", example: "วิชัย" },
                                         last_name: { type: "string", example: "สุขสมบูรณ์" },
                                         nickname: { type: "string", example: "ชัย" },
@@ -437,7 +437,7 @@ export async function GET() {
                             description: "หัวหน้างานโดยตรง (Direct Supervisor)",
                             properties: {
                                 id: { type: "string" },
-                                employee_code: { type: "string", example: "ICI-0001" },
+                                employeeId: { type: "string", example: "ICI-0001" },
                                 first_name: { type: "string", example: "วิชัย" },
                                 last_name: { type: "string", example: "สุขสมบูรณ์" },
                                 nickname: { type: "string", example: "ชัย" },
@@ -450,9 +450,9 @@ export async function GET() {
                 },
                 CreateEmployeeInput: {
                     type: "object",
-                    required: ["employee_code", "first_name", "last_name", "employment_status"],
+                    required: ["employeeId", "first_name", "last_name", "employment_status"],
                     properties: {
-                        employee_code: { type: "string", example: "ICI-0008" },
+                        employeeId: { type: "string", example: "ICI-0008" },
                         first_name: { type: "string", example: "สมศักดิ์" },
                         last_name: { type: "string", example: "มั่งคั่ง" },
                         nickname: { type: "string", example: "ศักดิ์" },
@@ -469,9 +469,9 @@ export async function GET() {
                 },
                 UpdateEmployeeInput: {
                     type: "object",
-                    required: ["employee_code", "first_name", "last_name", "employment_status"],
+                    required: ["employeeId", "first_name", "last_name", "employment_status"],
                     properties: {
-                        employee_code: { type: "string" },
+                        employeeId: { type: "string" },
                         first_name: { type: "string" },
                         last_name: { type: "string" },
                         nickname: { type: "string" },

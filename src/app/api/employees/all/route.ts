@@ -15,7 +15,7 @@ export async function OPTIONS() {
  *   - status: filter by employment_status (ACTIVE, PROBATION, RESIGNED, TERMINATED)
  *   - department_code (or department): filter by department code (e.g. IT) or name
  *   - position_code (or position): filter by position code (e.g. STAFF) or name
- *   - employee_code: filter by employee code (e.g. ICI96)
+ *   - employeeId (or employee_code): filter by employeeId (e.g. ICI96)
  *   - include: comma-separated relations to include (department,position,supervisor)
  */
 export async function GET(request: Request) {
@@ -28,7 +28,8 @@ export async function GET(request: Request) {
             (searchParams.get("department_code") || searchParams.get("department"))?.trim() || "";
         const positionCode =
             (searchParams.get("position_code") || searchParams.get("position"))?.trim() || "";
-        const employeeCode = searchParams.get("employee_code")?.trim() || "";
+        const employeeId =
+            (searchParams.get("employeeId") || searchParams.get("employee_code"))?.trim() || "";
         const roomReservableParam = searchParams.get("roomReservable")?.trim().toLowerCase() || "";
         const includeParam = searchParams.get("include") || "";
 
@@ -36,8 +37,8 @@ export async function GET(request: Request) {
         if (status) {
             where.employment_status = status.toUpperCase();
         }
-        if (employeeCode) {
-            where.employee_code = { equals: employeeCode, mode: "insensitive" };
+        if (employeeId) {
+            where.employeeId = { equals: employeeId, mode: "insensitive" };
         }
         if (roomReservableParam === "true" || roomReservableParam === "false") {
             where.roomReservable = roomReservableParam === "true";
@@ -74,7 +75,7 @@ export async function GET(request: Request) {
                     name_en: true,
                     head: {
                         select: {
-                            employee_code: true,
+                            employeeId: true,
                             first_name: true,
                             last_name: true,
                             nickname: true,
@@ -91,7 +92,7 @@ export async function GET(request: Request) {
         if (includeFields.includes("supervisor")) {
             include.supervisor = {
                 select: {
-                    employee_code: true,
+                    employeeId: true,
                     first_name: true,
                     last_name: true,
                     nickname: true,
@@ -103,9 +104,9 @@ export async function GET(request: Request) {
 
         const employees = await prisma.employee.findMany({
             where,
-            orderBy: { employee_code: "asc" },
+            orderBy: { employeeId: "asc" },
             select: {
-                employee_code: true,
+                employeeId: true,
                 first_name: true,
                 last_name: true,
                 nickname: true,
