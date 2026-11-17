@@ -110,6 +110,7 @@ export async function GET(request: Request) {
                 avatar_url: true,
                 hire_date: true,
                 employment_status: true,
+                roomReservable: true,
                 created_at: true,
                 updated_at: true,
                 ...include,

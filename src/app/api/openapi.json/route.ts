@@ -403,6 +403,7 @@ export async function GET() {
                         email: { type: "string", example: "vichai@icare.com" },
                         hire_date: { type: "string", format: "date" },
                         employment_status: { type: "string", enum: ["ACTIVE", "PROBATION", "RESIGNED", "TERMINATED"] },
+                        roomReservable: { type: "boolean", default: false },
                         department: {
                             type: "object",
                             nullable: true,
@@ -458,6 +459,7 @@ export async function GET() {
                         email: { type: "string", example: "somsak@icare.com" },
                         hire_date: { type: "string", format: "date", example: "2026-03-01" },
                         employment_status: { type: "string", enum: ["ACTIVE", "PROBATION", "RESIGNED", "TERMINATED"], default: "ACTIVE" },
+                        roomReservable: { type: "boolean", default: false },
                         department_id: { type: "string", nullable: true },
                         position_id: { type: "string", nullable: true },
                         supervisor_id: { type: "string", nullable: true },

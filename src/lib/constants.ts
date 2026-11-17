@@ -146,6 +146,7 @@ export const employeeSchema = z.object({
     avatar_url: z.string().optional().nullable(),
     hire_date: z.string().optional().nullable(),
     employment_status: z.enum(EMPLOYMENT_STATUSES),
+    roomReservable: z.boolean().optional().default(false),
     user_id: z.string().optional().nullable(),
     department_id: z.string().optional().nullable(),
     position_id: z.string().optional().nullable(),

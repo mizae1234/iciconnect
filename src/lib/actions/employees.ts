@@ -129,6 +129,7 @@ export async function createEmployee(data: {
     avatar_url?: string | null;
     hire_date?: string | null;
     employment_status: string;
+    roomReservable?: boolean;
     user_id?: string | null;
     department_id?: string | null;
     position_id?: string | null;
@@ -212,6 +213,7 @@ export async function createEmployee(data: {
             avatar_url: parsed.data.avatar_url || null,
             hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
             employment_status: parsed.data.employment_status,
+            roomReservable: parsed.data.roomReservable ?? false,
             user_id: finalUserId,
             department_id: parsed.data.department_id || null,
             position_id: parsed.data.position_id || null,
@@ -235,6 +237,7 @@ export async function updateEmployee(
         avatar_url?: string | null;
         hire_date?: string | null;
         employment_status: string;
+        roomReservable?: boolean;
         user_id?: string | null;
         department_id?: string | null;
         position_id?: string | null;
@@ -325,6 +328,7 @@ export async function updateEmployee(
             avatar_url: parsed.data.avatar_url || null,
             hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
             employment_status: parsed.data.employment_status,
+            roomReservable: parsed.data.roomReservable ?? false,
             user_id: finalUserId,
             department_id: parsed.data.department_id || null,
             position_id: parsed.data.position_id || null,
@@ -334,6 +338,23 @@ export async function updateEmployee(
 
     revalidatePath("/admin/employees");
     return { success: true };
+}
+
+export async function toggleEmployeeRoomReservable(id: string) {
+    await requireAdmin();
+    const emp = await prisma.employee.findUnique({
+        where: { id },
+        select: { roomReservable: true },
+    });
+    if (!emp) {
+        return { error: "ไม่พบข้อมูลพนักงาน" };
+    }
+    await prisma.employee.update({
+        where: { id },
+        data: { roomReservable: !emp.roomReservable },
+    });
+    revalidatePath("/admin/employees");
+    return { success: true, roomReservable: !emp.roomReservable };
 }
 
 export async function deleteEmployee(id: string) {

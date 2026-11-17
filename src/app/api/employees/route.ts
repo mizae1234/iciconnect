@@ -104,6 +104,7 @@ export async function POST(request: NextRequest) {
                 avatar_url: parsed.data.avatar_url || null,
                 hire_date: parsed.data.hire_date ? new Date(parsed.data.hire_date) : null,
                 employment_status: parsed.data.employment_status,
+                roomReservable: parsed.data.roomReservable ?? false,
                 user_id: parsed.data.user_id || null,
                 department_id: parsed.data.department_id || null,
                 position_id: parsed.data.position_id || null,

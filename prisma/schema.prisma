@@ -101,6 +101,7 @@ model Employee {
   avatar_url         String?
   hire_date          DateTime?
   employment_status  EmploymentStatus @default(ACTIVE)
+  roomReservable     Boolean          @default(false) @map("room_reservable")
   created_at         DateTime         @default(now())
   updated_at         DateTime         @updatedAt
   user_id            String?          @unique @db.Uuid

@@ -6,6 +6,7 @@ import {
     createEmployee,
     updateEmployee,
     deleteEmployee,
+    toggleEmployeeRoomReservable,
 } from "@/lib/actions/employees";
 import {
     EMPLOYMENT_STATUS_LABELS,
@@ -18,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -74,6 +76,7 @@ interface Employee {
     avatar_url: string | null;
     hire_date: Date | null;
     employment_status: string;
+    roomReservable: boolean;
     user_id: string | null;
     department_id: string | null;
     position_id: string | null;
@@ -150,6 +153,7 @@ const EMPTY_FORM = {
     avatar_url: "",
     hire_date: "",
     employment_status: "ACTIVE" as string,
+    roomReservable: false,
     user_id: "",
     department_id: "",
     position_id: "",
@@ -224,6 +228,7 @@ export function EmployeesClient({
             avatar_url: emp.avatar_url || "",
             hire_date: emp.hire_date ? new Date(emp.hire_date).toISOString().split("T")[0] : "",
             employment_status: emp.employment_status,
+            roomReservable: emp.roomReservable ?? false,
             user_id: emp.user_id || "",
             department_id: emp.department_id || "",
             position_id: emp.position_id || "",
@@ -286,6 +291,12 @@ export function EmployeesClient({
             } else {
                 setDialogOpen(false);
             }
+        });
+    }
+
+    function handleToggleRoomReservable(id: string) {
+        startTransition(async () => {
+            await toggleEmployeeRoomReservable(id);
         });
     }
 
@@ -427,13 +438,14 @@ export function EmployeesClient({
                             <TableHead>ตำแหน่ง</TableHead>
                             <TableHead>หัวหน้า</TableHead>
                             <TableHead className="text-center w-24">สถานะ</TableHead>
+                            <TableHead className="text-center w-28">จองห้องประชุม</TableHead>
                             <TableHead className="text-right w-28">จัดการ</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {employees.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                                <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
                                     <UserCog className="h-10 w-10 mx-auto mb-2 opacity-20" />
                                     ไม่พบข้อมูลพนักงาน
                                 </TableCell>
@@ -509,6 +521,13 @@ export function EmployeesClient({
                                         >
                                             {EMPLOYMENT_STATUS_LABELS[emp.employment_status as EmploymentStatusType] || emp.employment_status}
                                         </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        <Switch
+                                            checked={emp.roomReservable}
+                                            onCheckedChange={() => handleToggleRoomReservable(emp.id)}
+                                            disabled={isPending}
+                                        />
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-1">
@@ -765,6 +784,20 @@ export function EmployeesClient({
                                                 ))}
                                         </SelectContent>
                                     </Select>
+                                </div>
+                                <div className="col-span-2 flex items-center justify-between rounded-xl border border-border/60 p-3">
+                                    <div className="space-y-0.5">
+                                        <Label>สิทธิ์จองห้องประชุม (roomReservable)</Label>
+                                        <p className="text-xs text-muted-foreground">
+                                            อนุญาตให้พนักงานคนนี้สามารถจองห้องประชุมได้
+                                        </p>
+                                    </div>
+                                    <Switch
+                                        checked={form.roomReservable}
+                                        onCheckedChange={(v) =>
+                                            setForm({ ...form, roomReservable: v })
+                                        }
+                                    />
                                 </div>
                             </div>
                         </div>
