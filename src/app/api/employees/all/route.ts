@@ -8,12 +8,14 @@ export async function OPTIONS() {
 
 /**
  * GET /api/employees/all
- * Returns all active employees (no pagination).
+ * Returns all employees (no pagination) without internal UUIDs.
  * Auth: Bearer API Key (server-to-server)
  *
  * Query params:
- *   - status: filter by employment_status (default: all)
- *   - department_id: filter by department
+ *   - status: filter by employment_status (ACTIVE, PROBATION, RESIGNED, TERMINATED)
+ *   - department_code (or department): filter by department code (e.g. IT) or name
+ *   - position_code (or position): filter by position code (e.g. STAFF) or name
+ *   - employee_code: filter by employee code (e.g. ICI96)
  *   - include: comma-separated relations to include (department,position,supervisor)
  */
 export async function GET(request: Request) {
@@ -21,16 +23,37 @@ export async function GET(request: Request) {
         await requireApiKey();
 
         const { searchParams } = new URL(request.url);
-        const status = searchParams.get("status") || "";
-        const departmentId = searchParams.get("department_id") || "";
+        const status = searchParams.get("status")?.trim() || "";
+        const departmentCode =
+            (searchParams.get("department_code") || searchParams.get("department"))?.trim() || "";
+        const positionCode =
+            (searchParams.get("position_code") || searchParams.get("position"))?.trim() || "";
+        const employeeCode = searchParams.get("employee_code")?.trim() || "";
         const includeParam = searchParams.get("include") || "";
 
         const where: Record<string, unknown> = {};
         if (status) {
-            where.employment_status = status;
+            where.employment_status = status.toUpperCase();
         }
-        if (departmentId) {
-            where.department_id = departmentId;
+        if (employeeCode) {
+            where.employee_code = { equals: employeeCode, mode: "insensitive" };
+        }
+        if (departmentCode) {
+            where.department = {
+                OR: [
+                    { code: { equals: departmentCode, mode: "insensitive" } },
+                    { name: { contains: departmentCode, mode: "insensitive" } },
+                    { name_en: { contains: departmentCode, mode: "insensitive" } },
+                ],
+            };
+        }
+        if (positionCode) {
+            where.position = {
+                OR: [
+                    { code: { equals: positionCode, mode: "insensitive" } },
+                    { name: { contains: positionCode, mode: "insensitive" } },
+                ],
+            };
         }
 
         // Build dynamic includes based on query param (defaults to all relations if not specified)
@@ -42,14 +65,11 @@ export async function GET(request: Request) {
         if (includeFields.includes("department")) {
             include.department = {
                 select: {
-                    id: true,
+                    code: true,
                     name: true,
                     name_en: true,
-                    code: true,
-                    head_id: true,
                     head: {
                         select: {
-                            id: true,
                             employee_code: true,
                             first_name: true,
                             last_name: true,
@@ -62,12 +82,11 @@ export async function GET(request: Request) {
             };
         }
         if (includeFields.includes("position")) {
-            include.position = { select: { id: true, name: true, code: true } };
+            include.position = { select: { code: true, name: true } };
         }
         if (includeFields.includes("supervisor")) {
             include.supervisor = {
                 select: {
-                    id: true,
                     employee_code: true,
                     first_name: true,
                     last_name: true,
@@ -82,7 +101,6 @@ export async function GET(request: Request) {
             where,
             orderBy: { employee_code: "asc" },
             select: {
-                id: true,
                 employee_code: true,
                 first_name: true,
                 last_name: true,
@@ -92,9 +110,6 @@ export async function GET(request: Request) {
                 avatar_url: true,
                 hire_date: true,
                 employment_status: true,
-                department_id: true,
-                position_id: true,
-                supervisor_id: true,
                 created_at: true,
                 updated_at: true,
                 ...include,

@@ -40,7 +40,9 @@ export async function GET() {
                     security: [{ BearerAuth: [] }],
                     parameters: [
                         { name: "status", in: "query", schema: { type: "string", enum: ["ACTIVE", "PROBATION", "RESIGNED", "TERMINATED"] }, description: "กรองสถานะพนักงาน" },
-                        { name: "department_id", in: "query", schema: { type: "string" }, description: "กรองตามแผนก (UUID)" },
+                        { name: "department_code", in: "query", schema: { type: "string", example: "IT" }, description: "กรองตามรหัสแผนกหรือชื่อแผนก" },
+                        { name: "position_code", in: "query", schema: { type: "string", example: "STAFF" }, description: "กรองตามรหัสตำแหน่งหรือชื่อตำแหน่ง" },
+                        { name: "employee_code", in: "query", schema: { type: "string", example: "ICI96" }, description: "กรองตามรหัสพนักงาน" },
                         { name: "include", in: "query", schema: { type: "string", example: "department,position,supervisor", default: "department,position,supervisor" }, description: "เลือก relation ที่ต้องการ (ค่าเริ่มต้น: แสดงครบทั้ง department พร้อมหัวหน้าแผนก, position, supervisor)" },
                     ],
                     responses: {
