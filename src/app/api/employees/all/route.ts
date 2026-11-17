@@ -29,6 +29,7 @@ export async function GET(request: Request) {
         const positionCode =
             (searchParams.get("position_code") || searchParams.get("position"))?.trim() || "";
         const employeeCode = searchParams.get("employee_code")?.trim() || "";
+        const roomReservableParam = searchParams.get("roomReservable")?.trim().toLowerCase() || "";
         const includeParam = searchParams.get("include") || "";
 
         const where: Record<string, unknown> = {};
@@ -37,6 +38,9 @@ export async function GET(request: Request) {
         }
         if (employeeCode) {
             where.employee_code = { equals: employeeCode, mode: "insensitive" };
+        }
+        if (roomReservableParam === "true" || roomReservableParam === "false") {
+            where.roomReservable = roomReservableParam === "true";
         }
         if (departmentCode) {
             where.department = {
