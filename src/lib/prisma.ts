@@ -10,7 +10,13 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+const hasLatestSchema =
+  globalForPrisma.prisma &&
+  "roomReservable" in (globalForPrisma.prisma.employee.fields ?? {});
+
+export const prisma = hasLatestSchema
+  ? globalForPrisma.prisma!
+  : createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
